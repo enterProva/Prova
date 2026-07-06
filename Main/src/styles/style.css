@@ -1,0 +1,86 @@
+:root {
+    --color-bg: #FAFAF7;
+    --color-ink: #14161F;
+    --color-primary: #2B4CFF;
+    --color-verified: #1F9D6C;
+    --color-alert: #E63946;
+    --color-stroke: #E4E4DD;
+    --font-display: 'Georgia', 'Times New Roman', serif;
+    --font-body: -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif;
+    --font-mono: 'Courier New', monospace;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background: var(--color-bg);
+    color: var(--color-ink);
+    font-family: var(--font-body);
+    line-height: 1.5;
+}
+
+/* ---------- Layout ---------- */
+.section {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 64px 24px;
+    border-bottom: 1px solid var(--color-stroke);
+}
+
+/* ---------- Navbar ---------- */
+.navbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 32px;
+    border-bottom: 1px solid var(--color-stroke);
+}
+
+.navbar .logo {
+    font-family: var(--font-mono);
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    font-size: 1.1rem;
+}
+
+/* ---------- Hero ---------- */
+.hero {
+    text-align: left;
+    padding-top: 96px;
+    padding-bottom: 96px;
+    border-bottom: 1px solid
+}
+
+/* ---------- Navbar links ---------- */
+.nav-links {
+    display: flex;
+    gap: 28px;
+}
+
+.nav-links a {
+    color: var(--color-ink);
+    text-decoration: none;
+    font-size: 0.95rem;
+    font-weight: 500;
+    padding-bottom: 2px;
+    border-bottom: 2px solid transparent;
+    transition: border-color 0.15s ease;
+}
+
+.nav-links a:hover {
+    border-color: var(--color-primary);
+}
+
+/* smooth scroll when clicking anchor links */
+html {
+    scroll-behavior: smooth;
+}
+
+/* offset so section headings don't hide under the sticky navbar (if you make it sticky later) */
+section {
+    scroll-margin-top: 24px;
+}
