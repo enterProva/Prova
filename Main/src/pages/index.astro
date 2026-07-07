@@ -1,11 +1,89 @@
 ---
-import Welcome from '../components/Welcome.astro';
-import Layout from '../layouts/Layout.astro';
-
-// Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
-// Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
+const pageTitle = "Prova";
 ---
 
-<Layout>
-	<Welcome />
-</Layout>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>{pageTitle}</title>
+
+   <!-- <style>
+      h1 {
+        font-size: 60px;
+      }
+
+      header {
+        background: #617891;
+        padding: 30px;
+        text-align: center;
+      }
+
+      .hero {
+        background: white;
+        padding: 30px;
+      }
+
+      .about {
+        background: white;
+        padding: 30px;
+      }
+      .our-mission{
+        background: #d5b893;
+        padding: 50px;
+      }
+      .team{
+        background: white;
+        padding: 50px;
+      }
+    </style>
+    -->
+  </head>
+
+  <body>
+
+    <header>
+      <h1>Prova webpage</h1>
+      <nav>
+     
+      <a href="#about">About</a>
+      <a href="mission">Our mission</a>
+      <a href="product">Our app</a>
+      <a href="team">Our team</a>
+      </nav>
+    </header>
+
+    <main>
+
+      <section id="about">
+        <h2>About</h2>
+        <p>This is my about section.</p>
+      </section>
+
+      <section id="mission">
+        <h2>Mission</h2>
+        <p>This is about our mission.</p>
+      </section>
+
+      <section id="product">
+        <h2>Our app</h2>
+        <p>This is about our app.</p>
+      </section>
+      
+      <section class="workings">
+        <h4>How our app workds</h4>
+        <p>This is how our app works.</p>
+      </section>
+
+      <section class ="friends">
+        <h4>Invite your friends!</h4>
+        <p>Challenge your friends and earn points</p>
+      </section>
+
+      <section id="team">
+        <h2>Meet the team</h2>
+        <p> Meet our team members. </p>
+      </section>
+    </main>
+
+  </body>
+</html>
