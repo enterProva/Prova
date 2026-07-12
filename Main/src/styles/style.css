@@ -1,0 +1,39 @@
+@font-face {
+  font-family: "Qalisso";
+  src: url("../assets/fonts/Qalisso.otf") format("opentype");
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "text_font";
+  src: url("../assets/fonts/test_font.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
+
+.hero {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4rem;
+    padding: 5rem 2rem;
+}
+
+.hero-content {
+    text-align: center;
+}
+
+.hero-content h1 {
+    font-family: "Qalisso";
+    font-size: 6rem;
+    margin-bottom: 3rem;
+    font-weight: bold;
+}
+
+.hero-content h2 {
+  font-family: "Qalisso";
+  font-size: 2rem;
+  margin-bottom: 1.5rem;
+  font-weight: bold;
+}
