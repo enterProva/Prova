@@ -44,3 +44,52 @@
     margin-bottom: 1rem;
     margin-right: 3rem;
 }
+
+.navbar {
+    display:flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem 3rem;
+}
+
+.nav-links{
+    display:flex;
+    gap: 1.5rem;
+    list-style:none;
+}
+
+.nav-links a{
+    font-family: "text_font";
+    text-decoration:none;
+    color: #25344f;
+    font-weight: 600;
+
+    padding: 0.7rem 1.6rem;
+
+    border: 2px solid #617891;
+    border-radius: 999px;
+
+    transition: all 0.3s ease;
+}
+
+.nav-links a:hover {
+    background-color: #25344f;;
+    color:white;
+}
+
+.logo {
+    display:flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.logo img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.logo span{
+    font-family: "Qalisso";
+}
