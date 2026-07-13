@@ -30,6 +30,12 @@ body {
     justify-content: center;
     gap: 4rem;
     padding: 5rem 2rem;
+    background-image:
+      linear-gradient(rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.2)),
+      var(--hero-image);
+    background-repeat: no-repeat;
+    background-position: center 10%;
+    background-size: min(1200px, 96vw);
 }
 
 .hero-content {
@@ -222,6 +228,12 @@ body {
 }
 
 @media (max-width: 900px) {
+    .hero {
+      padding: 4rem 1.5rem 3rem;
+      background-position: center top;
+      background-size: 155vw;
+    }
+
     .waitlist-card {
       grid-template-columns: 1fr;
       padding: 1.5rem;
