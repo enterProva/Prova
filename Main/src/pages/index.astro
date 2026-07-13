@@ -1,8 +1,19 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import Hero from '../components/Hero.astro';
+import WaitlistForm from '../components/WaitlistForm.astro';
 ---
 
-<Layout>
-<Hero />
+<Layout title="Prova">
+  <Hero />
+  <main class="waitlist-page">
+    <section class="waitlist-shell">
+      <div class="waitlist-intro">
+        <p>Pause, Prove, Protect</p>
+        <h2>Early access starts here.</h2>
+      </div>
+
+      <WaitlistForm />
+    </section>
+  </main>
 </Layout>
