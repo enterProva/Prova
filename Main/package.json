@@ -16,5 +16,7 @@
     "@astrojs/node": "^11.0.2",
     "astro": "^7.0.6",
     "postgres": "^3.4.9"
+    "@astrojs/vercel": "^11.0.2",
+    "astro": "^7.0.6"
   }
 }
