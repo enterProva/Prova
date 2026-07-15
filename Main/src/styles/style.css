@@ -1,0 +1,168 @@
+@font-face {
+    font-family: "Qalisso";
+    src: url("../assets/fonts/Qalisso.otf") format("opentype");
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: "text_font";
+    src: url("../assets/fonts/test_font.ttf") format("truetype");
+    font-weight: normal;
+    font-style: normal;
+}
+
+.about {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4rem;
+    padding: 5rem 2rem;
+}
+
+.test_image{
+    width: 100%;
+}
+.test_image img {
+    width: 100%;
+    height: 390px;
+    object-fit: cover;
+    border-radius: 20px;
+}
+
+.about-content h2{
+    font-family: "Qalisso";
+    font-size: 3rem;
+    margin-bottom: 1.5rem;
+    font-weight: bold;
+}
+
+.about-content p{
+    font-family: "text_font";
+    font-size: 1.1rem;
+    line-height: 1.6;
+    margin-bottom: 1rem;
+    margin-right: 3rem;
+}
+
+.navbar {
+    display:flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem 3rem;
+}
+
+.nav-links{
+    display:flex;
+    gap: 1.5rem;
+    list-style:none;
+}
+
+.nav-links a{
+    font-family: "text_font";
+    text-decoration:none;
+    color: #25344f;
+    font-weight: 600;
+
+    padding: 0.7rem 1.6rem;
+
+    border: 2px solid #617891;
+    border-radius: 999px;
+
+    transition: all 0.3s ease;
+}
+
+.nav-links a:hover {
+    background-color: #25344f;;
+    color:white;
+}
+
+.logo {
+    display:flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.logo img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.logo span{
+    font-family: "Qalisso";
+}
+
+
+
+.footer {
+    background-color: #0F172A;
+    color: #ffffff;
+    padding: 50px 20px 20px;
+}
+
+.container {
+    max-width: 1200px;
+    margin: auto;
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    gap: 50px;
+}
+
+.footer-logo {
+    width: 60px;
+    height: auto;
+    margin-bottom: 15px;
+}
+
+.prova h2 {
+    margin: 0;
+    font-size: 2rem;
+}
+
+.prova p {
+    margin-top: 10px;
+    color: #cbd5e1;
+    line-height: 1.6;
+}
+
+.links h3,
+.contact h3 {
+    margin-bottom: 15px;
+}
+
+.links ul {
+    list-style: none;
+    padding: 0;
+}
+
+.links li {
+    margin-bottom: 10px;
+}
+
+.links a {
+    color: #cbd5e1;
+    text-decoration: none;
+    transition: color 0.3s;
+}
+
+.links a:hover {
+    color: #60a5fa;
+}
+
+.contact p {
+    color: #cbd5e1;
+    margin-bottom: 10px;
+}
+
+.bottom {
+    margin-top: 40px;
+    padding-top: 20px;
+    border-top: 1px solid #334155;
+    text-align: center;
+    color: #94a3b8;
+    font-size: 0.9rem;
+}
+
+
