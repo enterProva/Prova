@@ -41,6 +41,15 @@ All commands are run from the root of the project, from a terminal:
 | `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
 | `npm run astro -- --help` | Get help using the Astro CLI                     |
 
+## Waitlist setup
+
+The `/waitlist` page submits to `POST /api/waitlist` and expects a Postgres database.
+
+1. Copy `.env.example` to `.env` and set `DATABASE_URL`.
+2. Run the SQL in `db/waitlist.sql` against your database.
+3. Start the app with `astro dev --background`.
+4. For a production build, run `npm run build` and start the server with `npm run start`.
+
 ## 👀 Want to learn more?
 
 Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
