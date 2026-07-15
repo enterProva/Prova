@@ -93,3 +93,76 @@
 .logo span{
     font-family: "Qalisso";
 }
+
+
+
+.footer {
+    background-color: #0F172A;
+    color: #ffffff;
+    padding: 50px 20px 20px;
+}
+
+.container {
+    max-width: 1200px;
+    margin: auto;
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    gap: 50px;
+}
+
+.footer-logo {
+    width: 60px;
+    height: auto;
+    margin-bottom: 15px;
+}
+
+.prova h2 {
+    margin: 0;
+    font-size: 2rem;
+}
+
+.prova p {
+    margin-top: 10px;
+    color: #cbd5e1;
+    line-height: 1.6;
+}
+
+.links h3,
+.contact h3 {
+    margin-bottom: 15px;
+}
+
+.links ul {
+    list-style: none;
+    padding: 0;
+}
+
+.links li {
+    margin-bottom: 10px;
+}
+
+.links a {
+    color: #cbd5e1;
+    text-decoration: none;
+    transition: color 0.3s;
+}
+
+.links a:hover {
+    color: #60a5fa;
+}
+
+.contact p {
+    color: #cbd5e1;
+    margin-bottom: 10px;
+}
+
+.bottom {
+    margin-top: 40px;
+    padding-top: 20px;
+    border-top: 1px solid #334155;
+    text-align: center;
+    color: #94a3b8;
+    font-size: 0.9rem;
+}
+
+
