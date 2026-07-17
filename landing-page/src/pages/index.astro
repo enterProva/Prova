@@ -2,6 +2,9 @@
 import Layout from '../layouts/Layout.astro';
 import Hero from '../components/Hero.astro';
 import WaitlistForm from '../components/WaitlistForm.astro';
+import Navbar from '../components/Navbar.astro';
+import About from '../components/About.astro';
+import Footer from '../components/Footer.astro';
 ---
 
 <Layout title="Prova">
@@ -12,17 +15,9 @@ import WaitlistForm from '../components/WaitlistForm.astro';
         <p>Pause, Prove, Protect</p>
         <h2>Early access starts here.</h2>
       </div>
-
       <WaitlistForm />
     </section>
   </main>
-</Layout>
-import Navbar from '../components/Navbar.astro';
-import About from '../components/About.astro';
-import Footer from '../components/Footer.astro';
----
-
-<Layout>
   <Navbar />
   <About />
   <Footer />
