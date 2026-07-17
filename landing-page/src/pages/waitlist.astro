@@ -1,0 +1,23 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Navbar from '../components/Navbar.astro';
+import WaitlistForm from '../components/WaitlistForm.astro';
+import about from '../pages/about.astro';
+import Footer from '../components/Footer.astro';
+---
+
+<Layout title="Join the waitlist">
+  <Navbar />
+
+  <main class="waitlist-page">
+    <section class="waitlist-shell">
+      <div class="waitlist-intro">
+        <p>Pause, Prove, Protect</p>
+        <h2>Early access starts here.</h2>
+      </div>
+      <WaitlistForm />
+    </section>
+  </main>
+
+  <Footer />
+</Layout>
