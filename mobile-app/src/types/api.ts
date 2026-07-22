@@ -1,5 +1,9 @@
 export type Verdict = "verified" | "misleading" | "false" | "pending";
 export type BiasRating = "low" | "medium" | "high";
+export type PauseNudgeType = "reading" | "emotional" | "source" | "context";
+export type PauseNudgeResponse = "completed" | "skipped" | "dismissed";
+export type LessonCategory = "basics" | "advanced" | "expert";
+export type LessonStatus = "locked" | "available" | "in_progress" | "completed";
 
 export type ApiUser = {
   id: string;
@@ -14,6 +18,8 @@ export type ApiUser = {
   streakDays?: number | null;
   trustScore?: number | null;
   completedLessons?: number | null;
+  pauseCount?: number | null;
+  mindfulShares?: number | null;
 };
 
 export type LinkCheckResult = {
@@ -43,6 +49,28 @@ export type FeedPost = {
   sharesCount?: number | null;
   author?: ApiUser | null;
   linkCheck?: LinkCheckResult | null;
+};
+
+export type PauseNudge = {
+  id: string;
+  createdAt: string;
+  respondedAt?: string | null;
+  userId?: string | null;
+  nudgeType: PauseNudgeType;
+  prompt: string;
+  response?: PauseNudgeResponse | null;
+};
+
+export type LearningProgress = {
+  id: string;
+  userId?: string | null;
+  lessonId: string;
+  lessonTitle: string;
+  category: LessonCategory;
+  status: LessonStatus;
+  progressPercent?: number | null;
+  completedAt?: string | null;
+  createdAt?: string | null;
 };
 
 export type MobileAuthExchangeResponse = {

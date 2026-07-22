@@ -24,6 +24,8 @@ export default function AppTabsLayout() {
       }}>
       <Tabs.Screen name="feed" options={{ title: "Feed" }} />
       <Tabs.Screen name="link-checker" options={{ title: "Link Checker" }} />
+      <Tabs.Screen name="pause-nudges" options={{ title: "Pause" }} />
+      <Tabs.Screen name="learn" options={{ title: "Learn" }} />
       <Tabs.Screen name="profile" options={{ title: "Profile" }} />
     </Tabs>
   );

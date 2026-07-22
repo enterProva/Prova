@@ -43,7 +43,7 @@ export default function SignInScreen() {
         <SectionHeader title="What’s included" />
         <ThemedText>• AI-powered link checking against the existing Prova backend</ThemedText>
         <ThemedText>• Feed access backed by the current Express and Firebase stack</ThemedText>
-        <ThemedText>• A native profile and session flow built for Expo</ThemedText>
+        <ThemedText>• Native pause, learn, and profile flows built for Expo</ThemedText>
       </Card>
     </Screen>
   );
