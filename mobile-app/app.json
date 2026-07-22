@@ -1,11 +1,11 @@
 {
   "expo": {
-    "name": "MyNewProject",
-    "slug": "MyNewProject",
+    "name": "Prova",
+    "slug": "prova",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "mynewproject",
+    "scheme": "prova",
     "userInterfaceStyle": "automatic",
     "ios": {
       "icon": "./assets/expo.icon"
