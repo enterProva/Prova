@@ -137,19 +137,44 @@ const styles = StyleSheet.create({
     paddingBottom: Spacing.six,
   },
   card: {
+    backgroundColor: "#FFFFFF",
     borderRadius: 24,
     borderWidth: 1,
-    gap: Spacing.two,
+    borderColor: "#D5B893",
     padding: Spacing.three,
+
+    shadowColor: "#25344F",
+    shadowOffset: {
+      width: 0,
+      height: 8,
+    },
+    shadowOpacity: 0.08,
+    shadowRadius: 16,
+
+    elevation: 4,
+
+    gap: Spacing.two,
   },
   button: {
     alignItems: "center",
-    borderRadius: 999,
-    borderWidth: 1,
     justifyContent: "center",
-    minHeight: 52,
+
+    minHeight: 54,
+
+    borderRadius: 16,
+
     paddingHorizontal: Spacing.four,
     paddingVertical: Spacing.two,
+
+    shadowColor: "#25344F",
+    shadowOffset: {
+      width: 0,
+      height: 5,
+    },
+    shadowOpacity: 0.12,
+    shadowRadius: 10,
+
+    elevation: 3,
   },
   sectionHeader: {
     gap: Spacing.one,

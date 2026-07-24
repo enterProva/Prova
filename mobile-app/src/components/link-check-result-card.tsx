@@ -33,40 +33,23 @@ export function LinkCheckResultCard({
 
   return (
     <Card>
-      <View style={styles.titleRow}>
-        <View style={[styles.badge, { backgroundColor: verdictTone.badge }]}>
-          <ThemedText type="smallBold" style={styles.badgeText}>
-            {verdictTone.label}
-          </ThemedText>
-        </View>
-        <ThemedText type="small" themeColor="textSecondary">
-          {new Date(result.checkedAt).toLocaleString()}
+       style={{
+          backgroundColor: "#25344F",
+          borderColor: "#D5B893",
+          borderWidth: 2,
+        }}
+      >
+    <View style={styles.titleRow}>
+      <View style={[styles.badge, { backgroundColor: `${verdictTone.badge}20` }]}>
+        <ThemedText type="smallBold" style={styles.badgeText}>
+          {verdictTone.label}
         </ThemedText>
       </View>
 
-      <ThemedText type="smallBold">{result.title || result.url}</ThemedText>
-      <ThemedText themeColor="textSecondary">{result.domain || result.url}</ThemedText>
-
-      <View style={styles.metricsRow}>
-        <Metric label="Credibility" value={result.credibilityScore ?? 0} />
-        <Metric label="Fact Check" value={result.factCheckScore ?? 0} />
-        <Metric label="Bias" value={result.biasRating ?? "n/a"} />
-      </View>
-
-      {summary ? (
-        <ThemedText numberOfLines={showLongSummary ? undefined : 3}>{summary}</ThemedText>
-      ) : null}
-
-      {sources.length > 0 ? (
-        <View style={styles.sourcesContainer}>
-          <ThemedText type="smallBold">Sources</ThemedText>
-          {sources.slice(0, 5).map((source) => (
-            <ThemedText key={source} themeColor="textSecondary">
-              • {source}
-            </ThemedText>
-          ))}
-        </View>
-      ) : null}
+      <ThemedText type="small" themeColor="textSecondary">
+        {new Date(result.checkedAt).toLocaleString()}
+      </ThemedText>
+    </View>
     </Card>
   );
 }

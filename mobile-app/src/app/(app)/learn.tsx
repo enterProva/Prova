@@ -178,8 +178,8 @@ export default function LearnScreen() {
         style={[
           styles.progressCard,
           {
-            backgroundColor: theme.success,
-            borderColor: theme.success,
+            backgroundColor: "#25344F",
+            borderColor: "#D5B893",
           },
         ]}>
         <View style={styles.progressCopy}>
@@ -255,12 +255,12 @@ export default function LearnScreen() {
                   {
                     backgroundColor:
                       lesson.status === "completed"
-                        ? theme.success
+                        ? "#D5B893"
                         : lesson.status === "in_progress"
-                          ? theme.primary
+                          ? "#617891"
                           : lesson.status === "available"
-                            ? theme.warning
-                            : theme.backgroundSelected,
+                            ? "#D5B893"
+                            : "#314563",
                   },
                 ]}>
                 <ThemedText
@@ -359,13 +359,15 @@ const styles = StyleSheet.create({
     gap: Spacing.two,
   },
   progressEyebrow: {
-    color: "#DCFCE7",
+  color: "#D5B893",
   },
+
   progressTitle: {
     color: "#FFFFFF",
   },
+
   progressTip: {
-    color: "#F0FDF4",
+    color: "#FFFFFF",
   },
   progressBarTrack: {
     backgroundColor: "rgba(255,255,255,0.25)",

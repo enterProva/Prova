@@ -7,21 +7,31 @@ import { SafeAreaProvider } from "react-native-safe-area-context";
 
 import { queryClient } from "@/lib/query-client";
 import { SessionProvider, useSession } from "@/providers/session-provider";
+import { useFonts } from "expo-font"; 
 
 SplashScreen.preventAutoHideAsync();
+
 
 function RootNavigator() {
   const colorScheme = useColorScheme();
   const { isBootstrapping } = useSession();
+  const [fontsLoaded] = useFonts({
+  Qalisso: require("@/assets/fonts/Qalisso.otf"),
+  ProvaText: require("@/assets/fonts/text_font.ttf"),
+});
 
   useEffect(() => {
-    if (!isBootstrapping) {
-      void SplashScreen.hideAsync();
-    }
-  }, [isBootstrapping]);
+  if (!isBootstrapping && fontsLoaded) {
+    void SplashScreen.hideAsync();
+  }
+}, [isBootstrapping, fontsLoaded]);
+
+if (!fontsLoaded) {
+  return null;
+}
 
   return (
-    <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
+    <ThemeProvider value={DarkTheme}>
       <Stack
         screenOptions={{
           animation: "slide_from_right",

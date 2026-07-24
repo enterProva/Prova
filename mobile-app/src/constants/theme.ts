@@ -1,79 +1,64 @@
-/**
- * Below are the colors that are used in the app. The colors are defined in the light and dark mode.
- * There are many other ways to style your app. For example, [Nativewind](https://www.nativewind.dev/), [Tamagui](https://tamagui.dev/), [unistyles](https://reactnativeunistyles.vercel.app), etc.
- */
+import "@/global.css";
 
-import '@/global.css';
-
-import { Platform } from 'react-native';
+import { Platform } from "react-native";
 
 export const Colors = {
   light: {
-    text: "#141A20",
+    text: "#25344F",
     background: "#FFFFFF",
     backgroundElement: "#F0F0F3",
     backgroundSelected: "#E0E1E6",
-    textSecondary: "#60646C",
-    primary: "#2E90FF",
-    primaryForeground: "#FFFFFF",
-    accent: "#EFF6FF",
-    accentForeground: "#2E90FF",
+    textSecondary: "#617891",
+    primary: "#D5B893",
+    primaryForeground: "#25344F",
+    accent: "#F5EBDD",
+    accentForeground: "#25344F",
     success: "#10B981",
     successForeground: "#FFFFFF",
     warning: "#F59E0B",
     warningForeground: "#FFFFFF",
     destructive: "#F43F3F",
     destructiveForeground: "#FFFFFF",
-    border: "#E3ECF2",
+    border: "#D5B893",
     input: "#F6FAFB",
   },
+
   dark: {
-    text: "#E8EEF4",
-    background: "#000000",
-    backgroundElement: "#1A1C1F",
-    backgroundSelected: "#2E3135",
-    textSecondary: "#B0B4BA",
-    primary: "#2E90FF",
-    primaryForeground: "#FFFFFF",
-    accent: "#081522",
-    accentForeground: "#2E90FF",
+    text: "#FFFFFF",
+    background: "#25344F",
+    backgroundElement: "#314563",
+    backgroundSelected: "#3E5270",
+    textSecondary: "#617891",
+    primary: "#D5B893",
+    primaryForeground: "#25344F",
+    accent: "#D5B893",
+    accentForeground: "#25344F",
     success: "#10B981",
     successForeground: "#FFFFFF",
     warning: "#F59E0B",
     warningForeground: "#FFFFFF",
     destructive: "#F43F3F",
     destructiveForeground: "#FFFFFF",
-    border: "#262D34",
-    input: "#18222C",
+    border: "#617891",
+    input: "#314563",
   },
 } as const;
 
+
 export type ThemeColor = keyof typeof Colors.light & keyof typeof Colors.dark;
 
-export const Fonts = Platform.select({
-  ios: {
-    /** iOS `UIFontDescriptorSystemDesignDefault` */
-    sans: 'system-ui',
-    /** iOS `UIFontDescriptorSystemDesignSerif` */
-    serif: 'ui-serif',
-    /** iOS `UIFontDescriptorSystemDesignRounded` */
-    rounded: 'ui-rounded',
-    /** iOS `UIFontDescriptorSystemDesignMonospaced` */
-    mono: 'ui-monospace',
-  },
-  default: {
-    sans: 'normal',
-    serif: 'serif',
-    rounded: 'normal',
-    mono: 'monospace',
-  },
-  web: {
-    sans: 'var(--font-display)',
-    serif: 'var(--font-serif)',
-    rounded: 'var(--font-rounded)',
-    mono: 'var(--font-mono)',
-  },
-});
+
+export const Fonts = {
+  qalisso: "Qalisso",
+  text: "TextFont",
+  mono: Platform.select({
+    ios: "ui-monospace",
+    android: "monospace",
+    web: "var(--font-mono)",
+    default: "monospace",
+  }),
+};
+
 
 export const Spacing = {
   half: 2,
@@ -85,5 +70,12 @@ export const Spacing = {
   six: 64,
 } as const;
 
-export const BottomTabInset = Platform.select({ ios: 50, android: 80 }) ?? 0;
+
+export const BottomTabInset =
+  Platform.select({
+    ios: 50,
+    android: 80,
+  }) ?? 0;
+
+
 export const MaxContentWidth = 800;
