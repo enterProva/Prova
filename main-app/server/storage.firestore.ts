@@ -198,6 +198,17 @@ export class FirestoreStorage implements IStorage {
       factCheckSources: linkCheckData.factCheckSources ?? null,
     };
     await db.collection("linkChecks").doc(id).set({ ...data, checkedAt: (data.checkedAt ?? new Date()).toISOString() });
+
+    if (data.userId) {
+      const user = await this.getUser(data.userId);
+      if (user) {
+        await this.updateUserStats(data.userId, {
+          lastActiveDate: new Date(),
+          linksChecked: (user.linksChecked ?? 0) + 1,
+        });
+      }
+    }
+
     return data;
   }
 
@@ -287,6 +298,17 @@ export class FirestoreStorage implements IStorage {
       response: nudgeData.response ?? null,
     };
     await db.collection("pauseNudges").doc(id).set({ ...nudge, createdAt: (nudge.createdAt ?? new Date()).toISOString() });
+
+    if (nudge.userId && nudge.response === "completed") {
+      const user = await this.getUser(nudge.userId);
+      if (user) {
+        await this.updateUserStats(nudge.userId, {
+          lastActiveDate: new Date(),
+          pauseCount: (user.pauseCount ?? 0) + 1,
+        });
+      }
+    }
+
     return nudge;
   }
 
@@ -308,9 +330,27 @@ export class FirestoreStorage implements IStorage {
 
   async updatePauseNudgeResponse(id: string, response: string): Promise<PauseNudge> {
     const ref = db.collection("pauseNudges").doc(id);
+    const existing = await ref.get();
+    const previous = existing.exists ? revivePauseNudge(existing.data()!, existing.id) : null;
     await ref.update({ response, respondedAt: new Date().toISOString() });
     const doc = await ref.get();
-    return revivePauseNudge(doc.data()!, doc.id);
+    const updated = revivePauseNudge(doc.data()!, doc.id);
+
+    if (
+      updated.userId &&
+      response === "completed" &&
+      previous?.response !== "completed"
+    ) {
+      const user = await this.getUser(updated.userId);
+      if (user) {
+        await this.updateUserStats(updated.userId, {
+          lastActiveDate: new Date(),
+          pauseCount: (user.pauseCount ?? 0) + 1,
+        });
+      }
+    }
+
+    return updated;
   }
 
   // ----------------- LEARNING PROGRESS -----------------
@@ -334,12 +374,63 @@ export class FirestoreStorage implements IStorage {
       .limit(1)
       .get();
 
-    if (snapshot.empty) throw new Error("Learning progress not found");
+    let savedProgress: LearningProgress;
 
-    const doc = snapshot.docs[0];
-    const updated = { ...doc.data(), ...progress };
-    await doc.ref.set(updated);
-    return reviveLearningProgress(updated, doc.id);
+    if (snapshot.empty) {
+      const id = randomUUID();
+      savedProgress = {
+        id,
+        userId,
+        lessonId,
+        lessonTitle: progress.lessonTitle ?? "Untitled Lesson",
+        category: progress.category ?? "basics",
+        status: progress.status ?? "available",
+        progressPercent: progress.progressPercent ?? 0,
+        completedAt: progress.completedAt ?? null,
+        createdAt: new Date(),
+      };
+
+      await db.collection("learningProgress").doc(id).set({
+        ...savedProgress,
+        completedAt: savedProgress.completedAt
+          ? new Date(savedProgress.completedAt).toISOString()
+          : null,
+        createdAt: (savedProgress.createdAt ?? new Date()).toISOString(),
+      });
+    } else {
+      const doc = snapshot.docs[0];
+      const current = reviveLearningProgress(doc.data(), doc.id);
+      savedProgress = {
+        ...current,
+        ...progress,
+        id: doc.id,
+        lessonId,
+        userId,
+      };
+
+      await doc.ref.set({
+        ...savedProgress,
+        completedAt: savedProgress.completedAt
+          ? new Date(savedProgress.completedAt).toISOString()
+          : null,
+        createdAt: savedProgress.createdAt
+          ? new Date(savedProgress.createdAt).toISOString()
+          : new Date().toISOString(),
+      });
+    }
+
+    const allProgress = await this.getUserLearningProgress(userId);
+    const completedLessons = allProgress.filter((lesson) => lesson.status === "completed").length;
+    const user = await this.getUser(userId);
+
+    if (user) {
+      await this.updateUserStats(userId, {
+        completedLessons,
+        lastActiveDate: new Date(),
+      });
+    }
+
+    return savedProgress;
   }
 
   // ----------------- REPORTS -----------------
