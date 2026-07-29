@@ -19,7 +19,9 @@ export interface LinkCheckResult {
   biasRating: "low" | "medium" | "high";
   factCheckScore: number;
   sourcesCount: number;
-  sources: string[];
+  sourceUrls?: string[];
+  factCheckSources?: string[];
+  sources?: string[];
   summary?: string;
   modelUsed?: string;
   reasoning?: string;
@@ -164,6 +166,18 @@ export default function LinkCheckerTab() {
     }
   };
 
+  const getSourceUrls = (check: LinkCheckResult) => {
+    if (Array.isArray(check.sourceUrls) && check.sourceUrls.length > 0) {
+      return check.sourceUrls;
+    }
+
+    if (Array.isArray(check.sources) && check.sources.length > 0) {
+      return check.sources;
+    }
+
+    return Array.isArray(check.factCheckSources) ? check.factCheckSources : [];
+  };
+
   return (
     <div className="p-4 sm:p-6 overflow-x-hidden" data-testid="tab-link-checker">
       <div className="w-full px-4">
@@ -197,7 +211,7 @@ export default function LinkCheckerTab() {
                 </Button>
               </div>
               <p className="text-sm text-gray-500">
-                We'll analyze the content using multiple AI models and provide detailed reasoning, scores, and sources.
+                We&apos;ll analyze the page on the server and return a summary, scores, and supporting source links.
               </p>
             </div>
           </CardContent>
@@ -268,12 +282,12 @@ export default function LinkCheckerTab() {
                     </div>
                   </div>
 
-                  {(latestCheck.sources ?? []).length > 0 && (
+                  {getSourceUrls(latestCheck).length > 0 && (
                     <div className="mt-3 overflow-x-auto">
                       <h4 className="font-semibold text-sm text-gray-600 mb-2">Sources Referenced</h4>
                       <div className="bg-gray-50 rounded-lg p-3 w-full break-words overflow-hidden">
                         <ul className="space-y-2">
-                          {(latestCheck.sources ?? []).slice(0, 5).map((src: string, idx: number) => (
+                          {getSourceUrls(latestCheck).slice(0, 5).map((src: string, idx: number) => (
                             <li key={idx} className="text-sm flex items-start space-x-2">
                               <ExternalLink className="w-3 h-3 mt-0.5 text-gray-400 flex-shrink-0" />
                               {src.startsWith('http') ? (
@@ -285,9 +299,9 @@ export default function LinkCheckerTab() {
                               )}
                             </li>
                           ))}
-                          {(latestCheck.sources ?? []).length > 5 && (
+                          {getSourceUrls(latestCheck).length > 5 && (
                             <li className="text-xs text-gray-500">
-                              +{(latestCheck.sources ?? []).length - 5} more sources
+                              +{getSourceUrls(latestCheck).length - 5} more sources
                             </li>
                           )}
                         </ul>

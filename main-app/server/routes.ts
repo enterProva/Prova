@@ -17,7 +17,8 @@ import {
   insertReportSchema,
   linkCheckUrlSchema,
 } from "@shared/schema";
-import { EnhancedLinkCheckerService } from "../client/src/services/EnhancedLinkCheckerService";
+import { LinkCheckApiResponseSchema } from "@shared/linkCheck";
+import { LinkAnalysisService } from "./services/linkAnalysisService";
 import { FirestoreStorage } from "./storage.firestore";
 
 export const storage = new FirestoreStorage();
@@ -44,6 +45,9 @@ function getAllowedOrigins() {
 
 function formatDateValue(value: Date | string | null | undefined) {
   if (!value) return undefined;
+  if (typeof (value as any)?.toDate === "function") {
+    return (value as any).toDate().toISOString();
+  }
   return value instanceof Date ? value.toISOString() : String(value);
 }
 
@@ -56,14 +60,38 @@ function getDomainFromUrl(url: string) {
 }
 
 function serializeLinkCheck(linkCheck: any, extra: Record<string, unknown> = {}) {
-  return {
-    ...linkCheck,
-    checkedAt: formatDateValue(linkCheck.checkedAt) || new Date().toISOString(),
-    domain: getDomainFromUrl(linkCheck.url),
-    publicationDate: formatDateValue(linkCheck.publicationDate),
-    sources: linkCheck.factCheckSources ?? [],
-    ...extra,
-  };
+  const merged = { ...linkCheck, ...extra };
+  const sourceUrls = Array.isArray(merged.sourceUrls)
+    ? merged.sourceUrls
+    : Array.isArray(merged.factCheckSources)
+      ? merged.factCheckSources
+      : Array.isArray(merged.sources)
+        ? merged.sources
+        : [];
+
+  return LinkCheckApiResponseSchema.parse({
+    id: String(merged.id ?? ""),
+    url: String(merged.url ?? ""),
+    title: typeof merged.title === "string" && merged.title.trim() ? merged.title : String(merged.url ?? ""),
+    domain:
+      typeof merged.domain === "string" && merged.domain.trim()
+        ? merged.domain
+        : getDomainFromUrl(String(merged.url ?? "")) || "",
+    publicationDate: formatDateValue(merged.publicationDate) || null,
+    verdict: merged.verdict ?? "pending",
+    credibilityScore: typeof merged.credibilityScore === "number" ? merged.credibilityScore : 0,
+    biasRating: merged.biasRating ?? "medium",
+    factCheckScore: typeof merged.factCheckScore === "number" ? merged.factCheckScore : 0,
+    summary: typeof merged.summary === "string" ? merged.summary : "",
+    sourceUrls,
+    sourcesCount: sourceUrls.length,
+    checkedAt: formatDateValue(merged.checkedAt) || new Date().toISOString(),
+    factCheckSources: sourceUrls,
+    sources: sourceUrls,
+    ...(typeof merged.reasoning === "string" && merged.reasoning ? { reasoning: merged.reasoning } : {}),
+    ...(typeof merged.modelUsed === "string" && merged.modelUsed ? { modelUsed: merged.modelUsed } : {}),
+    ...(Array.isArray(merged.searchResults) ? { searchResults: merged.searchResults } : {}),
+  });
 }
 
 export async function registerRoutes(app: Express): Promise<Server> {
@@ -114,26 +142,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const validatedData = linkCheckUrlSchema.parse(req.body);
       const userId = getAuthenticatedUserId(req);
 
-      const factCheckResult = await EnhancedLinkCheckerService.checkLink(validatedData.url);
+      const analysis = await LinkAnalysisService.analyzeUrl(validatedData.url);
 
       const linkCheck = await storage.createLinkCheck({
         url: validatedData.url,
         userId,
-        title: factCheckResult.title || null,
-        verdict: factCheckResult.verdict,
-        credibilityScore: factCheckResult.credibilityScore,
-        biasRating: factCheckResult.biasRating,
-        factCheckScore: factCheckResult.factCheckScore,
-        sourcesCount: factCheckResult.sourcesCount,
-        publicationDate: factCheckResult.publicationDate || null,
-        factCheckSources: factCheckResult.sources,
+        title: analysis.title,
+        domain: analysis.domain,
+        verdict: analysis.verdict,
+        credibilityScore: analysis.credibilityScore,
+        biasRating: analysis.biasRating,
+        factCheckScore: analysis.factCheckScore,
+        summary: analysis.summary,
+        sourceUrls: analysis.sourceUrls,
+        sourcesCount: analysis.sourceUrls.length,
+        publicationDate: analysis.publicationDate ? new Date(analysis.publicationDate) : null,
+        factCheckSources: analysis.sourceUrls,
       });
 
-      res.json(
-        serializeLinkCheck(linkCheck, {
-          summary: factCheckResult.summary,
-        })
-      );
+      res.json(serializeLinkCheck(linkCheck));
     } catch (error) {
       console.error("Error checking link:", error);
       res.status(500).json({ message: "Failed to check link" });
