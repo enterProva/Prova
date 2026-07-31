@@ -43,6 +43,17 @@ interface IStorage {
 }
 
 // ----------------- REVIVE HELPERS -----------------
+function reviveDate(value: any): Date | null {
+  if (!value) return null;
+  if (value instanceof Date) return value;
+  if (typeof value?.toDate === "function") {
+    return value.toDate();
+  }
+
+  const parsed = new Date(value);
+  return Number.isNaN(parsed.getTime()) ? null : parsed;
+}
+
 function reviveUser(doc: any, id?: string): User {
   return {
     id: id ?? doc.id,
@@ -56,33 +67,42 @@ function reviveUser(doc: any, id?: string): User {
     pauseCount: doc.pauseCount ?? 0,
     mindfulShares: doc.mindfulShares ?? 0,
     completedLessons: doc.completedLessons ?? 0,
-    lastActiveDate: doc.lastActiveDate ? new Date(doc.lastActiveDate) : null,
-    createdAt: doc.createdAt ? new Date(doc.createdAt) : null,
-    updatedAt: doc.updatedAt ? new Date(doc.updatedAt) : null,
+    lastActiveDate: reviveDate(doc.lastActiveDate),
+    createdAt: reviveDate(doc.createdAt),
+    updatedAt: reviveDate(doc.updatedAt),
   };
 }
 
 function reviveLinkCheck(doc: any, id?: string): LinkCheck {
+  const sourceUrls = Array.isArray(doc.sourceUrls)
+    ? doc.sourceUrls
+    : Array.isArray(doc.factCheckSources)
+      ? doc.factCheckSources
+      : null;
+
   return {
     id: id ?? doc.id,
     userId: doc.userId ?? null,
-    checkedAt: doc.checkedAt ? new Date(doc.checkedAt) : null,
+    checkedAt: reviveDate(doc.checkedAt),
     url: doc.url,
     title: doc.title ?? null,
+    domain: doc.domain ?? null,
     verdict: doc.verdict,
     credibilityScore: doc.credibilityScore ?? null,
     biasRating: doc.biasRating ?? null,
     factCheckScore: doc.factCheckScore ?? null,
+    summary: doc.summary ?? null,
+    sourceUrls,
     sourcesCount: doc.sourcesCount ?? null,
-    publicationDate: doc.publicationDate ?? null,
-    factCheckSources: doc.factCheckSources ?? null,
+    publicationDate: reviveDate(doc.publicationDate),
+    factCheckSources: Array.isArray(doc.factCheckSources) ? doc.factCheckSources : sourceUrls,
   };
 }
 
 function reviveFeedPost(doc: any, id?: string): FeedPost {
   return {
     id: id ?? doc.id,
-    createdAt: doc.createdAt ? new Date(doc.createdAt) : null,
+    createdAt: reviveDate(doc.createdAt),
     authorId: doc.authorId ?? null,
     content: doc.content,
     imageUrl: doc.imageUrl ?? null,
@@ -96,9 +116,9 @@ function reviveFeedPost(doc: any, id?: string): FeedPost {
 function revivePauseNudge(doc: any, id?: string): PauseNudge {
   return {
     id: id ?? doc.id,
-    createdAt: doc.createdAt ? new Date(doc.createdAt) : null,
+    createdAt: reviveDate(doc.createdAt),
     userId: doc.userId ?? null,
-    respondedAt: doc.respondedAt ? new Date(doc.respondedAt) : null,
+    respondedAt: reviveDate(doc.respondedAt),
     nudgeType: doc.nudgeType,
     prompt: doc.prompt,
     response: doc.response ?? null,
@@ -114,16 +134,16 @@ function reviveLearningProgress(doc: any, id?: string): LearningProgress {
     category: doc.category,
     status: doc.status,
     progressPercent: doc.progressPercent ?? 0,
-    completedAt: doc.completedAt ? new Date(doc.completedAt) : null,
-    createdAt: doc.createdAt ? new Date(doc.createdAt) : null,
+    completedAt: reviveDate(doc.completedAt),
+    createdAt: reviveDate(doc.createdAt),
   };
 }
 
 function reviveReport(doc: any, id?: string): Report {
   return {
     id: id ?? doc.id,
-    createdAt: doc.createdAt ? new Date(doc.createdAt) : null,
-    reviewedAt: doc.reviewedAt ? new Date(doc.reviewedAt) : null,
+    createdAt: reviveDate(doc.createdAt),
+    reviewedAt: reviveDate(doc.reviewedAt),
     userId: doc.userId ?? null,
     status: doc.status ?? "pending",
     reportType: doc.reportType,
@@ -183,19 +203,28 @@ export class FirestoreStorage implements IStorage {
   // ----------------- LINK CHECKS -----------------
   async createLinkCheck(linkCheckData: InsertLinkCheck): Promise<LinkCheck> {
     const id = randomUUID();
+    const sourceUrls = Array.isArray(linkCheckData.sourceUrls)
+      ? linkCheckData.sourceUrls
+      : Array.isArray(linkCheckData.factCheckSources)
+        ? linkCheckData.factCheckSources
+        : null;
+
     const data: LinkCheck = {
       id,
       userId: linkCheckData.userId ?? null,
       checkedAt: new Date(),
       url: linkCheckData.url,
       title: linkCheckData.title ?? null,
+      domain: linkCheckData.domain ?? null,
       verdict: linkCheckData.verdict,
       credibilityScore: linkCheckData.credibilityScore ?? null,
       biasRating: linkCheckData.biasRating ?? null,
       factCheckScore: linkCheckData.factCheckScore ?? null,
-      sourcesCount: linkCheckData.sourcesCount ?? null,
+      summary: linkCheckData.summary ?? null,
+      sourceUrls,
+      sourcesCount: sourceUrls?.length ?? linkCheckData.sourcesCount ?? null,
       publicationDate: linkCheckData.publicationDate ?? null,
-      factCheckSources: linkCheckData.factCheckSources ?? null,
+      factCheckSources: sourceUrls,
     };
     await db.collection("linkChecks").doc(id).set({ ...data, checkedAt: (data.checkedAt ?? new Date()).toISOString() });
 
