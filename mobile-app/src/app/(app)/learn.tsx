@@ -27,14 +27,19 @@ function clampProgress(value: number) {
 
 function buildLessonState(progressRecords: LearningProgress[] | undefined) {
   return LESSON_LIBRARY.map<LessonState>((lesson, index) => {
-    const saved = progressRecords?.find((item) => item.lessonId === lesson.lessonId);
+    const saved = progressRecords?.find(
+      (item) => item.lessonId === lesson.lessonId
+    );
+
     const defaultStatus = index === 0 ? "available" : lesson.starterStatus;
     const status = saved?.status ?? defaultStatus;
 
     return {
       ...lesson,
       completedAt: saved?.completedAt ?? null,
-      progressPercent: clampProgress(saved?.progressPercent ?? (status === "completed" ? 100 : 0)),
+      progressPercent: clampProgress(
+        saved?.progressPercent ?? (status === "completed" ? 100 : 0)
+      ),
       status,
     };
   }).map((lesson, index, lessons) => {
@@ -43,6 +48,7 @@ function buildLessonState(progressRecords: LearningProgress[] | undefined) {
     }
 
     const previousLesson = lessons[index - 1];
+
     if (previousLesson?.status === "completed") {
       return {
         ...lesson,
@@ -57,14 +63,23 @@ function buildLessonState(progressRecords: LearningProgress[] | undefined) {
 export default function LearnScreen() {
   const theme = useTheme();
   const queryClient = useQueryClient();
+
   const { isAuthenticated, token, user } = useSession();
-  const [guestOverrides, setGuestOverrides] = useState<Record<string, Partial<LessonState>>>({});
-  const [selectedLessonId, setSelectedLessonId] = useState(LESSON_LIBRARY[0].lessonId);
+
+  const [guestOverrides, setGuestOverrides] = useState<
+    Record<string, Partial<LessonState>>
+  >({});
+
+  const [selectedLessonId, setSelectedLessonId] = useState(
+    LESSON_LIBRARY[0].lessonId
+  );
+
   const [tipIndex, setTipIndex] = useState(0);
 
   const progressQuery = useQuery({
     queryKey: ["learning-progress", token],
-    queryFn: () => apiJson<LearningProgress[]>("/api/learning/progress", { token }),
+    queryFn: () =>
+      apiJson<LearningProgress[]>("/api/learning/progress", { token }),
     enabled: isAuthenticated && !!token,
   });
 
@@ -91,30 +106,51 @@ export default function LearnScreen() {
 
   useEffect(() => {
     if (!lessons.some((lesson) => lesson.lessonId === selectedLessonId)) {
-      setSelectedLessonId(lessons[0]?.lessonId ?? LESSON_LIBRARY[0].lessonId);
+      setSelectedLessonId(
+        lessons[0]?.lessonId ?? LESSON_LIBRARY[0].lessonId
+      );
     }
   }, [lessons, selectedLessonId]);
 
-  const selectedLesson = lessons.find((lesson) => lesson.lessonId === selectedLessonId) ?? lessons[0];
-  const completedLessons = lessons.filter((lesson) => lesson.status === "completed").length;
+  const selectedLesson =
+    lessons.find((lesson) => lesson.lessonId === selectedLessonId) ??
+    lessons[0];
+
+  const completedLessons = lessons.filter(
+    (lesson) => lesson.status === "completed"
+  ).length;
+
   const totalLessons = lessons.length;
-  const completionPercent = totalLessons > 0 ? Math.round((completedLessons / totalLessons) * 100) : 0;
+
+  const completionPercent =
+    totalLessons > 0
+      ? Math.round((completedLessons / totalLessons) * 100)
+      : 0;
 
   const saveProgressMutation = useMutation({
     mutationFn: (nextLesson: LessonState) =>
-      apiJson<LearningProgress>(`/api/learning/progress/${nextLesson.lessonId}`, {
-        method: "PATCH",
-        token,
-        body: {
-          lessonTitle: nextLesson.lessonTitle,
-          category: nextLesson.category,
-          status: nextLesson.status,
-          progressPercent: nextLesson.progressPercent,
-          completedAt: nextLesson.status === "completed" ? new Date().toISOString() : null,
-        },
-      }),
+      apiJson<LearningProgress>(
+        `/api/learning/progress/${nextLesson.lessonId}`,
+        {
+          method: "PATCH",
+          token,
+          body: {
+            lessonTitle: nextLesson.lessonTitle,
+            category: nextLesson.category,
+            status: nextLesson.status,
+            progressPercent: nextLesson.progressPercent,
+            completedAt:
+              nextLesson.status === "completed"
+                ? new Date().toISOString()
+                : null,
+          },
+        }
+      ),
+
     onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: ["learning-progress", token] });
+      await queryClient.invalidateQueries({
+        queryKey: ["learning-progress", token],
+      });
     },
   });
 
@@ -123,11 +159,15 @@ export default function LearnScreen() {
       setGuestOverrides((current) => ({
         ...current,
         [nextLesson.lessonId]: {
-          completedAt: nextLesson.status === "completed" ? new Date().toISOString() : null,
+          completedAt:
+            nextLesson.status === "completed"
+              ? new Date().toISOString()
+              : null,
           progressPercent: nextLesson.progressPercent,
           status: nextLesson.status,
         },
       }));
+
       return;
     }
 
@@ -146,7 +186,10 @@ export default function LearnScreen() {
       return;
     }
 
-    const nextProgress = clampProgress(Math.max(selectedLesson.progressPercent, 25));
+    const nextProgress = clampProgress(
+      Math.max(selectedLesson.progressPercent, 25)
+    );
+
     await updateLesson({
       ...selectedLesson,
       progressPercent: nextProgress,
@@ -159,7 +202,10 @@ export default function LearnScreen() {
       return;
     }
 
-    const nextProgress = clampProgress(selectedLesson.progressPercent + 34);
+    const nextProgress = clampProgress(
+      selectedLesson.progressPercent + 34
+    );
+
     await updateLesson({
       ...selectedLesson,
       progressPercent: nextProgress,
@@ -172,6 +218,8 @@ export default function LearnScreen() {
       <SectionHeader
         title="Learn"
         subtitle="Build the habits behind Prova’s analysis with short, mobile-friendly lessons."
+        titleStyle={styles.serifTitle}
+        subtitleStyle={styles.figtreeText}
       />
 
       <Card
@@ -181,16 +229,28 @@ export default function LearnScreen() {
             backgroundColor: "#25344F",
             borderColor: "#D5B893",
           },
-        ]}>
+        ]}
+      >
         <View style={styles.progressCopy}>
-          <ThemedText type="smallBold" style={styles.progressEyebrow}>
+          <ThemedText
+            type="smallBold"
+            style={[styles.progressEyebrow, styles.figtreeBold]}
+          >
             LEARNING TRACK
           </ThemedText>
-          <ThemedText type="subtitle" style={styles.progressTitle}>
+
+          <ThemedText
+            type="subtitle"
+            style={[styles.progressTitle, styles.serifTitle]}
+          >
             {completedLessons} of {totalLessons} lessons completed
           </ThemedText>
-          <ThemedText style={styles.progressTip}>Tip: {LESSON_TIPS[tipIndex]}</ThemedText>
+
+          <ThemedText style={[styles.progressTip, styles.figtreeText]}>
+            Tip: {LESSON_TIPS[tipIndex]}
+          </ThemedText>
         </View>
+
         <View style={styles.progressBarTrack}>
           <View
             style={[
@@ -203,8 +263,7 @@ export default function LearnScreen() {
           />
         </View>
       </Card>
-
-      <Card>
+            <Card>
         <SectionHeader
           title="Lesson map"
           subtitle={
@@ -212,14 +271,18 @@ export default function LearnScreen() {
               ? "Your progress is saved to the current backend."
               : "Guest mode lets you preview the path before you sign in."
           }
+          titleStyle={styles.serifTitle}
+          subtitleStyle={styles.figtreeText}
         />
 
         {progressQuery.isLoading ? (
-          <ThemedText themeColor="textSecondary">Loading your lesson progress...</ThemedText>
+          <ThemedText style={styles.figtreeText} themeColor="textSecondary">
+            Loading your lesson progress...
+          </ThemedText>
         ) : null}
 
         {progressQuery.error ? (
-          <ThemedText themeColor="textSecondary">
+          <ThemedText style={styles.figtreeText} themeColor="textSecondary">
             {progressQuery.error instanceof Error
               ? progressQuery.error.message
               : "Could not load your lesson progress."}
@@ -238,17 +301,29 @@ export default function LearnScreen() {
               style={[
                 styles.lessonRow,
                 {
-                  backgroundColor: isSelected ? theme.accent : theme.backgroundElement,
-                  borderColor: isSelected ? theme.primary : theme.backgroundSelected,
+                  backgroundColor: isSelected
+                    ? theme.accent
+                    : theme.backgroundElement,
+                  borderColor: isSelected
+                    ? theme.primary
+                    : theme.backgroundSelected,
                   opacity: isLocked ? 0.55 : 1,
                 },
-              ]}>
+              ]}
+            >
               <View style={styles.lessonCopy}>
-                <ThemedText type="smallBold">{lesson.lessonTitle}</ThemedText>
-                <ThemedText themeColor="textSecondary">
+                <ThemedText style={styles.figtreeBold}>
+                  {lesson.lessonTitle}
+                </ThemedText>
+
+                <ThemedText
+                  style={styles.figtreeText}
+                  themeColor="textSecondary"
+                >
                   {lesson.category} · {lesson.progressPercent}% complete
                 </ThemedText>
               </View>
+
               <View
                 style={[
                   styles.statusBadge,
@@ -257,18 +332,24 @@ export default function LearnScreen() {
                       lesson.status === "completed"
                         ? "#D5B893"
                         : lesson.status === "in_progress"
-                          ? "#617891"
-                          : lesson.status === "available"
-                            ? "#D5B893"
-                            : "#314563",
+                        ? "#617891"
+                        : lesson.status === "available"
+                        ? "#D5B893"
+                        : "#314563",
                   },
-                ]}>
+                ]}
+              >
                 <ThemedText
-                  type="smallBold"
-                  style={{
-                    color:
-                      lesson.status === "locked" ? theme.text : theme.primaryForeground,
-                  }}>
+                  style={[
+                    styles.figtreeBold,
+                    {
+                      color:
+                        lesson.status === "locked"
+                          ? theme.text
+                          : theme.primaryForeground,
+                    },
+                  ]}
+                >
                   {lesson.status.replace("_", " ")}
                 </ThemedText>
               </View>
@@ -279,11 +360,24 @@ export default function LearnScreen() {
 
       {selectedLesson ? (
         <Card>
-          <SectionHeader title={selectedLesson.lessonTitle} subtitle={selectedLesson.description} />
+          <SectionHeader
+            title={selectedLesson.lessonTitle}
+            subtitle={selectedLesson.description}
+            titleStyle={styles.serifTitle}
+            subtitleStyle={styles.figtreeText}
+          />
 
           <View style={styles.detailMeta}>
-            <ThemedText type="smallBold">Progress</ThemedText>
-            <ThemedText themeColor="textSecondary">{selectedLesson.progressPercent}% complete</ThemedText>
+            <ThemedText style={styles.figtreeBold}>
+              Progress
+            </ThemedText>
+
+            <ThemedText
+              style={styles.figtreeText}
+              themeColor="textSecondary"
+            >
+              {selectedLesson.progressPercent}% complete
+            </ThemedText>
           </View>
 
           {selectedLesson.steps.map((step, index) => (
@@ -294,33 +388,49 @@ export default function LearnScreen() {
                   {
                     backgroundColor: theme.primary,
                   },
-                ]}>
-                <ThemedText type="smallBold" style={styles.stepBadgeText}>
+                ]}
+              >
+                <ThemedText style={styles.stepBadgeText}>
                   {index + 1}
                 </ThemedText>
               </View>
-              <ThemedText style={styles.stepCopy}>{step}</ThemedText>
+
+              <ThemedText style={styles.figtreeText}>
+                {step}
+              </ThemedText>
             </View>
           ))}
 
           <Card style={styles.tipCard}>
-            <ThemedText type="smallBold">Why this matters</ThemedText>
-            <ThemedText themeColor="textSecondary">{selectedLesson.tip}</ThemedText>
+            <ThemedText style={styles.figtreeBold}>
+              Why this matters
+            </ThemedText>
+
+            <ThemedText
+              style={styles.figtreeText}
+              themeColor="textSecondary"
+            >
+              {selectedLesson.tip}
+            </ThemedText>
           </Card>
 
           <View style={styles.actionRow}>
             <Button
-              disabled={selectedLesson.status === "locked" || saveProgressMutation.isPending}
+              disabled={
+                selectedLesson.status === "locked" ||
+                saveProgressMutation.isPending
+              }
               label={
                 selectedLesson.status === "completed"
                   ? "Completed"
                   : selectedLesson.status === "in_progress"
-                    ? "Continue lesson"
-                    : "Start lesson"
+                  ? "Continue lesson"
+                  : "Start lesson"
               }
               onPress={() => void handleStartOrContinue()}
               style={styles.actionButton}
             />
+
             <Button
               disabled={
                 selectedLesson.status === "locked" ||
@@ -335,14 +445,21 @@ export default function LearnScreen() {
           </View>
 
           {!isAuthenticated ? (
-            <ThemedText themeColor="textSecondary">
+            <ThemedText
+              style={styles.figtreeText}
+              themeColor="textSecondary"
+            >
               Sign in when you want this lesson state to sync with your Prova account.
             </ThemedText>
           ) : null}
 
           {user?.completedLessons ? (
-            <ThemedText themeColor="textSecondary">
-              Profile total: {user.completedLessons} completed lesson{user.completedLessons === 1 ? "" : "s"}.
+            <ThemedText
+              style={styles.figtreeText}
+              themeColor="textSecondary"
+            >
+              Profile total: {user.completedLessons} completed lesson
+              {user.completedLessons === 1 ? "" : "s"}.
             </ThemedText>
           ) : null}
         </Card>
@@ -352,14 +469,28 @@ export default function LearnScreen() {
 }
 
 const styles = StyleSheet.create({
+  serifTitle: {
+    fontFamily: "Serif",
+  },
+
+  figtreeText: {
+    fontFamily: "Figtree",
+  },
+
+  figtreeBold: {
+    fontFamily: "FigtreeSemiBold",
+  },
+
   progressCard: {
     gap: Spacing.three,
   },
+
   progressCopy: {
     gap: Spacing.two,
   },
+
   progressEyebrow: {
-  color: "#D5B893",
+    color: "#D5B893",
   },
 
   progressTitle: {
@@ -369,16 +500,19 @@ const styles = StyleSheet.create({
   progressTip: {
     color: "#FFFFFF",
   },
+
   progressBarTrack: {
     backgroundColor: "rgba(255,255,255,0.25)",
     borderRadius: 999,
     height: 12,
     overflow: "hidden",
   },
+
   progressBarFill: {
     borderRadius: 999,
     height: "100%",
   },
+
   lessonRow: {
     alignItems: "center",
     borderRadius: 20,
@@ -389,22 +523,27 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.three,
     paddingVertical: Spacing.two,
   },
+
   lessonCopy: {
     flex: 1,
     gap: Spacing.half,
   },
+
   statusBadge: {
     borderRadius: 999,
     paddingHorizontal: Spacing.two,
     paddingVertical: 6,
   },
+
   detailMeta: {
     gap: Spacing.half,
   },
+
   stepRow: {
     flexDirection: "row",
     gap: Spacing.two,
   },
+
   stepBadge: {
     alignItems: "center",
     borderRadius: 999,
@@ -413,20 +552,26 @@ const styles = StyleSheet.create({
     marginTop: 2,
     width: 28,
   },
+
   stepBadgeText: {
     color: "#FFFFFF",
+    fontFamily: "FigtreeSemiBold",
   },
+
   stepCopy: {
     flex: 1,
   },
+
   tipCard: {
     padding: Spacing.two,
   },
+
   actionRow: {
     flexDirection: "row",
     flexWrap: "wrap",
     gap: Spacing.two,
   },
+
   actionButton: {
     flex: 1,
     minWidth: 160,

@@ -16,12 +16,14 @@ export default function LinkCheckerScreen() {
   const theme = useTheme();
   const queryClient = useQueryClient();
   const { token } = useSession();
+
   const [latestResult, setLatestResult] = useState<LinkCheckResult | null>(null);
   const [url, setUrl] = useState("");
 
   const recentChecksQuery = useQuery({
     queryKey: ["link-checks", token ?? "guest"],
-    queryFn: () => apiJson<LinkCheckResult[]>("/api/link-checks/user?limit=10", { token }),
+    queryFn: () =>
+      apiJson<LinkCheckResult[]>("/api/link-checks/user?limit=10", { token }),
   });
 
   const checkLinkMutation = useMutation({
@@ -31,13 +33,21 @@ export default function LinkCheckerScreen() {
         token,
         body: { url: nextUrl },
       }),
+
     onSuccess: (result) => {
       setLatestResult(result);
       setUrl("");
-      queryClient.setQueryData<LinkCheckResult[]>(["link-checks", token ?? "guest"], (previous = []) => {
-        const withoutDuplicate = previous.filter((item) => item.id !== result.id);
-        return [result, ...withoutDuplicate];
-      });
+
+      queryClient.setQueryData<LinkCheckResult[]>(
+        ["link-checks", token ?? "guest"],
+        (previous = []) => {
+          const withoutDuplicate = previous.filter(
+            (item) => item.id !== result.id
+          );
+
+          return [result, ...withoutDuplicate];
+        }
+      );
     },
   });
 
@@ -66,12 +76,13 @@ export default function LinkCheckerScreen() {
 
   return (
     <Screen>
-      <SectionHeader
-        title="Link Checker"
-      />
+      <SectionHeader title="Link Checker" />
 
       <Card>
-        <ThemedText type="smallBold">Analyze a URL</ThemedText>
+        <ThemedText style={styles.figtreeBold}>
+          Analyze a URL
+        </ThemedText>
+
         <TextInput
           autoCapitalize="none"
           autoCorrect={false}
@@ -81,6 +92,7 @@ export default function LinkCheckerScreen() {
           placeholderTextColor={theme.textSecondary}
           style={[
             styles.input,
+            styles.figtreeText,
             {
               backgroundColor: theme.input,
               borderColor: theme.border,
@@ -89,21 +101,33 @@ export default function LinkCheckerScreen() {
           ]}
           value={url}
         />
+
         <Button
           label={checkLinkMutation.isPending ? "Checking..." : "Check link"}
           onPress={handleCheckLink}
         />
       </Card>
 
-      {latestResult ? <LinkCheckResultCard result={latestResult} /> : null}
+      {latestResult ? (
+        <LinkCheckResultCard result={latestResult} />
+      ) : null}
 
-      <SectionHeader title="Recent checks" subtitle="Open any saved analysis to review it in detail." />
+      <SectionHeader
+        title="Recent checks"
+        subtitle="Open any saved analysis to review it in detail."
+      />
 
-      {recentChecksQuery.isLoading ? <LoadingState label="Loading recent checks..." /> : null}
+      {recentChecksQuery.isLoading ? (
+        <LoadingState label="Loading recent checks..." />
+      ) : null}
+
       {recentChecksQuery.error ? (
         <Card>
-          <ThemedText type="smallBold">Could not load recent checks</ThemedText>
-          <ThemedText themeColor="textSecondary">
+          <ThemedText style={styles.figtreeBold}>
+            Could not load recent checks
+          </ThemedText>
+
+          <ThemedText style={styles.figtreeText}>
             {recentChecksQuery.error instanceof Error
               ? recentChecksQuery.error.message
               : "Unknown error"}
@@ -116,15 +140,27 @@ export default function LinkCheckerScreen() {
           <Link href={`/checks/${check.id}` as Href} asChild>
             <Pressable style={styles.recentCheck}>
               <View style={styles.recentCheckCopy}>
-                <ThemedText type="smallBold">{check.title || check.url}</ThemedText>
-                <ThemedText themeColor="textSecondary">
+                <ThemedText style={styles.figtreeBold}>
+                  {check.title || check.url}
+                </ThemedText>
+
+                <ThemedText style={styles.figtreeSecondary}>
                   {check.domain || check.url}
                 </ThemedText>
+
                 {check.summary ? (
-                  <ThemedText numberOfLines={2}>{check.summary}</ThemedText>
+                  <ThemedText
+                    style={styles.figtreeText}
+                    numberOfLines={2}
+                  >
+                    {check.summary}
+                  </ThemedText>
                 ) : null}
               </View>
-              <ThemedText type="smallBold">{check.credibilityScore ?? 0}/100</ThemedText>
+
+              <ThemedText style={styles.figtreeBold}>
+                {check.credibilityScore ?? 0}/100
+              </ThemedText>
             </Pressable>
           </Link>
         </Card>
@@ -134,6 +170,19 @@ export default function LinkCheckerScreen() {
 }
 
 const styles = StyleSheet.create({
+  figtreeText: {
+    fontFamily: "Figtree",
+  },
+
+  figtreeBold: {
+    fontFamily: "FigtreeSemiBold",
+  },
+
+  figtreeSecondary: {
+    fontFamily: "Figtree",
+    opacity: 0.7,
+  },
+
   input: {
     borderRadius: 18,
     borderWidth: 1,
@@ -141,12 +190,14 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.three,
     paddingVertical: Spacing.two,
   },
+
   recentCheck: {
     alignItems: "center",
     flexDirection: "row",
     gap: Spacing.two,
     justifyContent: "space-between",
   },
+
   recentCheckCopy: {
     flex: 1,
     gap: Spacing.half,
