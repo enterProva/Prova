@@ -1,16 +1,10 @@
-@font-face {
-  font-family: "Qalisso";
-  src: url("../assets/fonts/Qalisso.otf") format("opentype");
-  font-weight: normal;
-  font-display: swap;
-  font-style: normal;
-}
-
 :root {
   color-scheme: light;
   --space-cadet: #25344f;
   --slate-grey: #617891;
   --white: #ffffff;
+  --font-display: "Antonio", "Archivo Variable", "Inter", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+  --font-body: "Inter", "Archivo Variable", "text_font", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
 }
 
 html,
@@ -20,13 +14,23 @@ body {
 }
 
 body {
-  font-family: "text_font", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+  font-family: var(--font-body);
   background: var(--white);
   color: var(--space-cadet);
+  overflow-x: hidden;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+img, picture, svg {
+  max-width: 100%;
+  height: auto;
 }
 
 .hero {
-    font-family: "Qalisso";
+    font-family: var(--font-display);
 }
 
 @font-face {
@@ -150,18 +154,18 @@ body {
 }
 
 .hero-content h1 {
-    font-family: "Qalisso";
+    font-family: var(--font-display);
     font-size: 6rem;
     margin-bottom: 3rem;
-    font-weight: bold;
+    font-weight: 700;
     color: var(--space-cadet);
 }
 
 .hero-content h2 {
-  font-family: "Qalisso";
+  font-family: var(--font-display);
   font-size: 2rem;
   margin-bottom: 1.5rem;
-  font-weight: bold;
+  font-weight: 600;
   color: var(--slate-grey);
 }
 
@@ -337,8 +341,23 @@ body {
 @media (max-width: 900px) {
     .hero {
       padding: 4rem 1.5rem 3rem;
+      min-height: auto;
       background-position: center top;
       background-size: 140vw;
+    }
+
+    .hero-content {
+      max-width: 100%;
+      padding: 0 0.75rem;
+    }
+
+    .hero-copy {
+      max-width: 100%;
+      font-size: clamp(0.95rem, 1.2vw, 1.1rem);
+    }
+
+    .hero-buttons {
+      gap: 0.75rem;
     }
 
     .about {
@@ -366,15 +385,14 @@ body {
       font-size: clamp(2.2rem, 14vw, 3.6rem);
     }
 
-    .navbar {
-      padding: 1rem 1.5rem;
-      flex-wrap: wrap;
-      gap: 1rem;
+    .preview-shell,
+    .clip-grid,
+    .steps {
+      grid-template-columns: 1fr;
     }
 
-    .nav-links {
-      flex-wrap: wrap;
-      justify-content: center;
+    .preview-grid {
+      grid-template-columns: 1fr 1fr;
       gap: 0.85rem;
     }
 }
@@ -397,91 +415,26 @@ body {
       font-size: clamp(1.5rem, 7vw, 2rem);
     }
 
-    .nav-toggle {
-      display: inline-flex !important;
+    .preview-grid {
+      grid-template-columns: 1fr;
     }
 
-    .navbar {
-      position: relative;
+    .about {
+      padding: 3.5rem 1.5rem;
     }
 
-    .nav-links {
-      display: none !important;
-      position: fixed;
-      top: 92px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: var(--white);
-      border: 1px solid rgba(37, 52, 79, 0.12);
-      border-radius: 28px;
-      box-shadow: 0 24px 48px rgba(37, 52, 79, 0.16);
+    .hero {
+      padding: 3.5rem 1.25rem 2.5rem;
+    }
+
+    .hero-buttons {
       flex-direction: column;
-      gap: 0.75rem;
-      padding: 1.25rem;
-      min-width: 240px;
-      width: min(92vw, 260px);
-      z-index: 60;
-      opacity: 0;
-      pointer-events: none;
-      transform: translate(-50%, -10px);
-      transition: opacity 0.25s ease, transform 0.25s ease;
+      align-items: stretch;
     }
 
-    .nav-links.open {
-      display: flex !important;
-      opacity: 1;
-      pointer-events: auto;
-      transform: translate(-50%, 0);
-    }
-
-    .nav-backdrop {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: rgba(15, 23, 42, 0.22);
-      z-index: 55;
-      pointer-events: none;
-      opacity: 0;
-      transition: opacity 0.25s ease;
-    }
-
-    .nav-backdrop.open {
-      display: block;
-      pointer-events: auto;
-      opacity: 1;
-    }
-
-    .nav-links li {
+    .hero-buttons button,
+    .hero-buttons a {
       width: 100%;
-      display: flex;
-      justify-content: center;
-    }
-
-    .nav-links a {
-      display: block !important;
-      width: auto !important;
-      padding: 0.85rem 0 !important;
-      border-radius: 0 !important;
-      text-align: center !important;
-      border: none !important;
-      background: transparent !important;
-      color: var(--space-cadet) !important;
-      font-family: Georgia, serif !important;
-      font-weight: 500 !important;
-      letter-spacing: 0.02em !important;
-      text-transform: none !important;
-      font-size: 0.95rem !important;
-      transition: color 0.2s ease !important;
-    }
-
-    .nav-links a:hover {
-      color: var(--slate-grey) !important;
-      background: transparent !important;
-    }
-
-    .logo img {
-      width: 34px;
-      height: 34px;
     }
 }
 
@@ -505,26 +458,16 @@ body {
       padding: 0.85rem 0.95rem;
     }
 
-    .nav-links {
-      left: 50%;
-      top: 84px;
-      transform: translateX(-50%);
-      width: min(92vw, 260px);
-      min-width: 180px;
+    .hero {
+      padding: 3rem 1rem 2rem;
     }
 
-    .nav-links a {
-      width: auto;
-      text-align: center;
-      padding: 0.85rem 0;
+    .hero-content h1 {
+      font-size: clamp(2.5rem, 14vw, 3.2rem);
     }
 
-    .nav-toggle {
-      display: inline-flex !important;
-    }
-
-    .navbar {
-      justify-content: space-between;
+    .hero-content h2 {
+      font-size: clamp(1.3rem, 8vw, 1.8rem);
     }
 
     .footer {
@@ -548,14 +491,14 @@ body {
 }
 
 .about-content h2{
-    font-family: "Qalisso";
+    font-family: var(--font-display);
     font-size: 3rem;
     margin-bottom: 1.5rem;
-    font-weight: bold;
+    font-weight: 700;
 }
 
 .about-content p{
-  font-family: Georgia, serif;
+  font-family: var(--font-body);
     font-size: 1.1rem;
     line-height: 1.6;
     margin-bottom: 1rem;
@@ -687,24 +630,44 @@ body {
 }
 
 .navbar {
-    display:flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 1.5rem 3rem;
-    font-family: Georgia, serif;
+    position: sticky;
+    top: 0;
+    z-index: 80;
+    background: rgba(255, 255, 255, 0.86);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid rgba(37, 52, 79, 0.08);
 }
 
-.nav-links{
-    display:flex;
-    gap: 1.5rem;
-    list-style:none;
+.navbar-inner {
+    max-width: min(1200px, 100%);
+    margin: 0 auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem 2rem;
+}
+
+.nav-links {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: clamp(1rem, 2vw, 2.2rem);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.nav-links li {
+    display: flex;
+    align-items: center;
 }
 
 .nav-links.open {
     display: flex;
 }
 
-.nav-links a{
+.nav-links a {
     font-family: Georgia, serif;
     text-decoration: none;
     color: var(--space-cadet);
@@ -716,7 +679,7 @@ body {
     border: none;
     border-radius: 6px;
     position: relative;
-    transition: color 0.25s ease;
+    transition: color 0.25s ease, background-color 0.25s ease;
 }
 
 .nav-links a::after {
@@ -738,6 +701,58 @@ body {
 
 .nav-links a:hover::after {
     transform: scaleX(1);
+}
+
+.nav-logo {
+    padding: 0.6rem 1rem;
+    border-radius: 999px;
+    background: rgba(37, 52, 79, 0.06);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7);
+}
+
+.logo-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    text-decoration: none;
+    color: var(--space-cadet);
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 0.95rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+}
+
+.logo-link img {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.mobile-logo {
+    display: none;
+}
+
+.nav-logo,
+.mobile-logo {
+    padding: 0.6rem 1rem;
+    border-radius: 999px;
+    background: rgba(37, 52, 79, 0.06);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7);
+}
+
+.cta-link {
+    padding: 0.85rem 1.2rem;
+    border-radius: 999px;
+    border: 1px solid rgba(37, 52, 79, 0.14);
+    background: rgba(37, 52, 79, 0.08);
+    color: var(--space-cadet);
+    font-weight: 700;
+}
+
+.cta-link:hover {
+    background: rgba(37, 52, 79, 0.12);
 }
 
 .nav-toggle {
@@ -806,21 +821,99 @@ body {
     border: 0;
 }
 
-.logo {
-    display:flex;
-    align-items: center;
-    gap: 10px;
-}
+@media (max-width: 900px) {
+    .navbar-inner {
+        justify-content: space-between;
+    }
 
-.logo img {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    object-fit: cover;
-}
+    .mobile-logo {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
 
-.logo span{
-    font-family: "Qalisso";
+    .nav-toggle {
+        display: inline-flex;
+    }
+
+    .nav-logo {
+        display: none !important;
+    }
+
+    .nav-links {
+        position: fixed;
+        top: 84px;
+        left: 50%;
+        transform: translate(-50%, -10px);
+        display: none;
+        flex-direction: column;
+        gap: 0.85rem;
+        width: min(92vw, 320px);
+        padding: 1.5rem;
+        background: rgba(255, 255, 255, 0.98);
+        border: 1px solid rgba(37, 52, 79, 0.12);
+        border-radius: 28px;
+        box-shadow: 0 28px 70px rgba(37, 52, 79, 0.14);
+        z-index: 75;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.25s ease, transform 0.25s ease;
+    }
+
+    .nav-links.open {
+        display: flex;
+        opacity: 1;
+        pointer-events: auto;
+        transform: translate(-50%, 0);
+    }
+
+    .nav-backdrop {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(15, 23, 42, 0.28);
+        z-index: 70;
+        pointer-events: none;
+        opacity: 0;
+        transition: opacity 0.25s ease;
+    }
+
+    .nav-backdrop.open {
+        display: block;
+        pointer-events: auto;
+        opacity: 1;
+    }
+
+    .nav-links li {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+    }
+
+    .nav-links a {
+        display: block;
+        width: 100%;
+        padding: 0.95rem 0;
+        border-radius: 18px;
+        background: rgba(37, 52, 79, 0.04);
+        text-align: center;
+        color: var(--space-cadet);
+        font-family: Georgia, serif;
+        font-weight: 600;
+        letter-spacing: 0.02em;
+        text-transform: none;
+        font-size: 0.95rem;
+        transition: color 0.25s ease, background-color 0.25s ease;
+    }
+
+    .nav-links a:hover {
+        color: var(--slate-grey);
+        background: rgba(37, 52, 79, 0.08);
+    }
+
+    .nav-logo {
+        display: none;
+    }
 }
 
 
