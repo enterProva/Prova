@@ -3,8 +3,13 @@
   --space-cadet: #25344f;
   --slate-grey: #617891;
   --white: #ffffff;
-  --font-display: "Antonio", "Archivo Variable", "Inter", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
-  --font-body: "Inter", "Archivo Variable", "text_font", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+  --font-display: "Space Grotesk", "Figtree", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+  --font-body: "Figtree", "Inter", "Archivo Variable", "text_font", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+  --font-serif: "EB Garamond", Georgia, Cambria, "Times New Roman", Times, serif;
+}
+
+html {
+  scroll-behavior: smooth;
 }
 
 html,
@@ -18,6 +23,88 @@ body {
   background: var(--white);
   color: var(--space-cadet);
   overflow-x: hidden;
+  font-size: 16px;
+  line-height: 1.65;
+  letter-spacing: -0.01em;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+.hero,
+.hero-content h1,
+.hero-content h2,
+.clip-meta h4,
+footer h2,
+footer h3,
+.preview-section h2,
+.clips-section h2,
+.how-section h2,
+.waitlist-intro h2 {
+  font-family: var(--font-display);
+  margin: 0;
+}
+
+h1 {
+  font-size: clamp(3.2rem, 6.2vw, 5.8rem);
+  line-height: 0.95;
+  letter-spacing: -0.05em;
+  font-weight: 700;
+}
+
+h2 {
+  font-size: clamp(2rem, 3.3vw, 2.7rem);
+  line-height: 1.06;
+  letter-spacing: -0.03em;
+  font-weight: 700;
+}
+
+h3 {
+  font-size: clamp(1.08rem, 1.4vw, 1.25rem);
+  line-height: 1.25;
+  letter-spacing: -0.02em;
+  font-weight: 600;
+}
+
+.eyebrow {
+  display: inline-block;
+  margin-bottom: 0.85rem;
+  font-family: var(--font-display);
+  font-size: 0.76rem;
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--slate-grey);
+}
+
+.muted,
+.hero-copy,
+.step p,
+.clip-meta p,
+.waitlist-description,
+.waitlist-message,
+.prova p,
+.contact p,
+.bottom,
+.preview-left .muted,
+.clips-section .muted {
+  font-family: var(--font-body);
+  font-size: 1.01rem;
+  line-height: 1.75;
+  color: var(--slate-grey);
+}
+
+.serif-accent,
+blockquote,
+em,
+strong.serif {
+  font-family: var(--font-serif);
 }
 
 *, *::before, *::after {
@@ -55,11 +142,12 @@ img, picture, svg {
 }
 
 .hero-copy {
-  max-width: 620px;
-  margin: 1.5rem auto 2rem;
-  font-size: clamp(1rem, 1.2vw, 1.2rem);
+  max-width: 640px;
+  margin: 1.25rem auto 2rem;
+  font-size: clamp(1.02rem, 1.2vw, 1.16rem);
   line-height: 1.8;
   color: var(--slate-grey);
+  font-weight: 500;
 }
 
 .hero-buttons {
@@ -77,7 +165,9 @@ img, picture, svg {
   padding: 1rem 1.75rem;
   cursor: pointer;
   font: inherit;
-  font-weight: 600;
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: -0.01em;
   transition: transform 0.2s ease, background-color 0.2s ease, color 0.2s ease;
 }
 
@@ -116,6 +206,9 @@ img, picture, svg {
   padding: 1rem;
   color: var(--space-cadet);
   text-align: center;
+  font-family: var(--font-display);
+  font-weight: 600;
+  letter-spacing: -0.01em;
 }
 
 .clip-meta {
@@ -124,6 +217,8 @@ img, picture, svg {
 
 .clip-meta h4 {
   margin: 0 0 0.5rem;
+  font-size: 1.15rem;
+  line-height: 1.35;
 }
 
 .clip-meta p {
@@ -155,18 +250,21 @@ img, picture, svg {
 
 .hero-content h1 {
     font-family: var(--font-display);
-    font-size: 6rem;
-    margin-bottom: 3rem;
+    font-size: clamp(3.8rem, 8vw, 6.4rem);
+    margin-bottom: 1.2rem;
     font-weight: 700;
     color: var(--space-cadet);
+    letter-spacing: -0.06em;
 }
 
 .hero-content h2 {
   font-family: var(--font-display);
-  font-size: 2rem;
-  margin-bottom: 1.5rem;
+  font-size: clamp(1.45rem, 2.8vw, 2.1rem);
+  margin-bottom: 1.25rem;
   font-weight: 600;
+  line-height: 1.2;
   color: var(--slate-grey);
+  letter-spacing: -0.02em;
 }
 
 .waitlist-page {
@@ -242,7 +340,7 @@ img, picture, svg {
 .waitlist-description {
     margin: 0;
     max-width: 30rem;
-    font-family: Georgia, serif;
+    font-family: var(--font-serif);
     font-size: 1.05rem;
     line-height: 1.7;
     color: var(--slate-grey);
@@ -260,7 +358,7 @@ img, picture, svg {
 .waitlist-field {
     display: grid;
     gap: 0.45rem;
-    font-family: Georgia, serif;
+    font-family: var(--font-serif);
     color: var(--space-cadet);
 }
 
@@ -325,7 +423,7 @@ img, picture, svg {
 .waitlist-message {
     min-height: 1.5rem;
     margin: 0;
-    font-family: Georgia, serif;
+    font-family: var(--font-serif);
     line-height: 1.5;
     color: var(--slate-grey);
 }
@@ -668,11 +766,11 @@ img, picture, svg {
 }
 
 .nav-links a {
-    font-family: Georgia, serif;
+    font-family: var(--font-body);
     text-decoration: none;
     color: var(--space-cadet);
-    font-weight: 500;
-    letter-spacing: 0.02em;
+    font-weight: 600;
+    letter-spacing: 0.01em;
     text-transform: none;
     font-size: 0.95rem;
     padding: 0.45rem 0;
@@ -749,6 +847,8 @@ img, picture, svg {
     background: rgba(37, 52, 79, 0.08);
     color: var(--space-cadet);
     font-weight: 700;
+    font-family: var(--font-display);
+    letter-spacing: -0.01em;
 }
 
 .cta-link:hover {
@@ -898,7 +998,7 @@ img, picture, svg {
         background: rgba(37, 52, 79, 0.04);
         text-align: center;
         color: var(--space-cadet);
-        font-family: Georgia, serif;
+        font-family: var(--font-body);
         font-weight: 600;
         letter-spacing: 0.02em;
         text-transform: none;
@@ -919,72 +1019,107 @@ img, picture, svg {
 
 
 .footer {
-    background-color: var(--space-cadet);
+    background: linear-gradient(135deg, rgba(37, 52, 79, 0.98) 0%, rgba(31, 45, 70, 0.98) 50%, rgba(20, 30, 49, 0.98) 100%);
     color: var(--white);
-    padding: 50px 20px 20px;
+    padding: 3.25rem 2rem 2rem;
+    font-family: var(--font-body);
+    border-top: 1px solid rgba(255,255,255,0.08);
+    backdrop-filter: blur(18px);
 }
 
 .container {
     max-width: 1200px;
     margin: auto;
-    display: grid;
-    grid-template-columns: 2fr 1fr 1fr;
-    gap: 50px;
+}
+
+.footer-shell {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 2rem;
+    flex-wrap: wrap;
+    padding: 1.2rem 1.2rem;
+    border-radius: 24px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.08);
+}
+
+.footer-intro {
+    max-width: 640px;
+}
+
+.footer-brand {
+    display: flex;
+    align-items: center;
+    gap: 0.9rem;
+    margin-bottom: 0.8rem;
 }
 
 .footer-logo {
-    width: 60px;
-    height: auto;
-    margin-bottom: 15px;
+    width: 50px;
+    height: 50px;
+    border-radius: 16px;
+    object-fit: cover;
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.18);
 }
 
-.prova h2 {
+.footer-brand h2 {
     margin: 0;
-    font-size: 2rem;
+    font-size: 1.35rem;
+    letter-spacing: -0.03em;
 }
 
-.prova p {
-    margin-top: 10px;
-    color: var(--white);
+.footer-brand p,
+.footer-copy,
+.footer-contact-card p,
+.footer-contact-card a {
+    margin: 0;
+    color: rgba(255,255,255,0.8);
     line-height: 1.6;
+    font-family: var(--font-body);
 }
 
-.links h3,
-.contact h3 {
-    margin-bottom: 15px;
+.footer-copy {
+    max-width: 34rem;
+    font-size: 0.98rem;
 }
 
-.links ul {
-    list-style: none;
-    padding: 0;
+.footer-contact-card {
+    min-width: min(280px, 100%);
+    padding: 1rem 1.1rem;
+    border-radius: 18px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.12);
 }
 
-.links li {
-    margin-bottom: 10px;
+.contact-label {
+    font-family: var(--font-display);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.72);
+    margin-bottom: 0.35rem;
 }
 
-.links a {
+.contact-link {
+    display: inline-block;
+    font-family: var(--font-display);
+    font-size: 1rem;
+    font-weight: 700;
     color: var(--white);
     text-decoration: none;
-    transition: color 0.3s;
+    margin-bottom: 0.35rem;
 }
 
-.links a:hover {
-    color: var(--slate-grey);
+.contact-link:hover {
+    color: #dfe7f3;
 }
 
-.contact p {
-    color: var(--white);
-    margin-bottom: 10px;
-}
-
-.bottom {
-    margin-top: 40px;
-    padding-top: 20px;
-    border-top: 1px solid rgba(97, 120, 145, 0.35);
-    text-align: center;
-    color: var(--slate-grey);
-    font-size: 0.9rem;
+.contact-note {
+    font-size: 0.92rem;
+    color: rgba(255,255,255,0.76);
 }
 
 
