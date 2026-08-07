@@ -671,6 +671,19 @@ img, picture, svg {
   backdrop-filter: blur(14px) saturate(130%);
   background: rgba(255,255,255,0.5);
 }
+.center-card {
+  grid-column: 1 / -1;
+  max-width: 720px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.mil-section .center-card {
+  grid-column: 1 / -1;
+  max-width: 760px;
+  margin: 0 auto;
+  text-align: center;
+}
 .clip-media{
   min-height:180px;
   display:grid;
@@ -683,41 +696,207 @@ img, picture, svg {
 
 .how-section {
   padding: 3.5rem 2rem;
-  background: #ffffff;
+  background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
 }
-.how-section h2 {
-  margin-bottom: 1.25rem;
+.section-heading {
+  max-width: 760px;
+  margin-bottom: 2rem;
 }
-.steps {
+.section-heading h2 {
+  margin-bottom: 0.8rem;
+}
+.flow-shell {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: 1fr 1.1fr 1fr;
+  align-items: center;
   gap: 1rem;
 }
-.step {
-  background: #f8fbff;
-  border-radius: 18px;
-  padding: 1.5rem;
+.flow-card,
+.flow-footer-card {
+  padding: 1.4rem;
+  border-radius: 22px;
   border: 1px solid rgba(37,52,79,0.08);
+  background: rgba(255,255,255,0.9);
+  box-shadow: 0 18px 45px rgba(37,52,79,0.05);
 }
-.step strong {
-  display: block;
-  margin-bottom: 0.85rem;
-  color: var(--space-cadet);
+.flow-card h3,
+.flow-footer-card h3 {
+  margin: 0.5rem 0 0.45rem;
+  font-size: 1.1rem;
 }
-.step p {
+.flow-card p,
+.flow-footer-card p {
   margin: 0;
   color: var(--slate-grey);
   line-height: 1.7;
 }
+.flow-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.35rem 0.6rem;
+  border-radius: 999px;
+  background: rgba(37,52,79,0.08);
+  color: var(--space-cadet);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+.flow-center {
+  position: relative;
+  display: grid;
+  place-items: center;
+  min-height: 260px;
+}
+.flow-glow {
+  position: absolute;
+  inset: 10% 15%;
+  background: radial-gradient(circle, rgba(118, 158, 255, 0.28) 0%, rgba(118, 158, 255, 0) 72%);
+  animation: pulseGlow 2.8s ease-in-out infinite;
+}
+.flow-screen {
+  position: relative;
+  width: min(100%, 320px);
+  padding: 1.25rem;
+  border-radius: 24px;
+  background: linear-gradient(135deg, #fff, #f2f7ff);
+  border: 1px solid rgba(37,52,79,0.1);
+  box-shadow: 0 20px 50px rgba(37,52,79,0.12);
+  text-align: center;
+  transform: translateY(0);
+  animation: floatCard 2.4s ease-in-out infinite;
+}
+.flow-pill {
+  display: inline-block;
+  padding: 0.7rem 0.95rem;
+  margin: 0.3rem;
+  border-radius: 999px;
+  background: var(--space-cadet);
+  color: white;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.92rem;
+}
+.flow-pill.subtle {
+  background: rgba(37,52,79,0.08);
+  color: var(--space-cadet);
+}
+.flow-foot {
+  margin-top: 1rem;
+}
+.flow-footer-card {
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+@keyframes pulseGlow {
+  0%, 100% { transform: scale(0.96); opacity: 0.8; }
+  50% { transform: scale(1.04); opacity: 1; }
+}
+
+@keyframes floatCard {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-6px); }
+}
 
 @media (max-width: 900px) {
-  .clip-grid,
-  .steps,
-  .preview-shell {
+  .flow-shell {
     grid-template-columns: 1fr;
   }
-  .preview-grid {
-    grid-template-columns: 1fr 1fr;
+  .flow-card.flow-card-left,
+  .flow-card.flow-card-right {
+    text-align: center;
+  }
+}
+
+.mil-section {
+  padding: 3.5rem 2rem;
+  background: linear-gradient(180deg, rgba(245, 247, 250, 1), rgba(255, 255, 255, 1));
+}
+.mil-section .container {
+  display: grid;
+  gap: 1.5rem;
+}
+.mil-section h2 {
+  margin-bottom: 0.75rem;
+}
+.mil-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+}
+.mil-card {
+  padding: 1.5rem;
+  border-radius: 22px;
+  background: rgba(255,255,255,0.85);
+  border: 1px solid rgba(37,52,79,0.08);
+  box-shadow: 0 18px 40px rgba(37,52,79,0.05);
+}
+.mil-card h4 {
+  margin: 0 0 0.75rem;
+  font-size: 1.05rem;
+}
+.mil-card p {
+  margin: 0;
+  color: var(--slate-grey);
+}
+.mil-details {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+.mil-details h3 {
+  margin: 0 0 0.55rem;
+  font-size: 1rem;
+}
+.mil-details p {
+  margin: 0;
+  color: var(--slate-grey);
+}
+.mil-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: center;
+}
+.mil-links .secondary-button,
+.mil-links .primary-button {
+  padding: 0.9rem 1.35rem;
+}
+.mil-affiliations {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+  margin: 1.5rem 0 0.75rem;
+}
+.mil-affiliation {
+  padding: 1rem 1.2rem;
+  border-radius: 18px;
+  background: rgba(255,255,255,0.95);
+  border: 1px solid rgba(37,52,79,0.08);
+}
+.mil-affiliation strong {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: var(--space-cadet);
+}
+.mil-affiliation span {
+  color: var(--slate-grey);
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+@media (max-width: 900px) {
+  .mil-grid,
+  .mil-details,
+  .mil-affiliations {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 720px) {
+  .mil-section {
+    padding: 3rem 1.5rem;
   }
 }
 
@@ -841,18 +1020,8 @@ img, picture, svg {
 }
 
 .cta-link {
-    padding: 0.85rem 1.2rem;
-    border-radius: 999px;
-    border: 1px solid rgba(37, 52, 79, 0.14);
-    background: rgba(37, 52, 79, 0.08);
     color: var(--space-cadet);
-    font-weight: 700;
-    font-family: var(--font-display);
-    letter-spacing: -0.01em;
-}
-
-.cta-link:hover {
-    background: rgba(37, 52, 79, 0.12);
+    font-weight: 600;
 }
 
 .nav-toggle {
