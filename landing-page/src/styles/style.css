@@ -6,6 +6,32 @@
   --font-display: "Space Grotesk", "Figtree", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
   --font-body: "Figtree", "Inter", "Archivo Variable", "text_font", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
   --font-serif: "EB Garamond", Georgia, Cambria, "Times New Roman", Times, serif;
+  --reveal-duration: 0.85s;
+  --reveal-ease: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.reveal-enabled .reveal-on-scroll {
+  opacity: 0;
+  transform: translateY(22px);
+  visibility: hidden;
+  transition: opacity var(--reveal-duration) var(--reveal-ease), transform var(--reveal-duration) var(--reveal-ease);
+  transition-delay: var(--reveal-delay, 0s);
+  will-change: opacity, transform;
+}
+
+.reveal-enabled .reveal-on-scroll.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+  visibility: visible;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal-enabled .reveal-on-scroll {
+    transition: none !important;
+    transform: none !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+  }
 }
 
 html {
@@ -155,6 +181,99 @@ img, picture, svg {
   justify-content: center;
   gap: 1rem;
   flex-wrap: wrap;
+}
+
+.video-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 120;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+}
+
+.video-modal.is-open {
+  display: flex;
+}
+
+.video-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.86);
+}
+
+.video-panel {
+  position: relative;
+  width: min(100%, 520px);
+  border-radius: 28px;
+  background: var(--white);
+  color: var(--space-cadet);
+  box-shadow: 0 36px 80px rgba(15, 23, 42, 0.3);
+  overflow: hidden;
+}
+
+.video-close {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  width: 2.5rem;
+  height: 2.5rem;
+  display: grid;
+  place-items: center;
+  border: none;
+  border-radius: 999px;
+  background: rgba(37, 52, 79, 0.08);
+  color: var(--space-cadet);
+  font-size: 1.35rem;
+  cursor: pointer;
+  z-index: 1;
+}
+
+.video-confirmation {
+  padding: 2.2rem 2rem 1.8rem;
+  text-align: center;
+}
+
+.video-confirmation h3 {
+  margin: 0 0 0.7rem;
+  font-size: 1.2rem;
+}
+
+.video-confirmation p {
+  margin: 0 0 1rem;
+  color: var(--slate-grey);
+}
+
+.video-actions {
+  display: flex;
+  justify-content: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin-top: 1rem;
+}
+
+.confirm-cancel {
+  background: transparent;
+  color: var(--space-cadet);
+  border: 1px solid rgba(37, 52, 79, 0.16);
+}
+
+.confirm-continue {
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@media (max-width: 720px) {
+  .video-panel {
+    width: min(100%, 92vw);
+  }
+
+  .video-confirmation {
+    padding: 1.8rem 1.15rem 1.3rem;
+  }
 }
 
 .primary-button,
@@ -461,6 +580,7 @@ img, picture, svg {
     .about {
       flex-direction: column;
       align-items: flex-start;
+      gap: 2rem;
       padding: 4rem 1.5rem;
       background-position: top center;
       background-size: cover;
@@ -485,8 +605,17 @@ img, picture, svg {
 
     .preview-shell,
     .clip-grid,
-    .steps {
+    .steps,
+    .flow-shell,
+    .mil-grid,
+    .mil-details,
+    .mil-affiliations {
       grid-template-columns: 1fr;
+    }
+
+    .footer-shell {
+      flex-direction: column;
+      align-items: stretch;
     }
 
     .preview-grid {
@@ -513,8 +642,32 @@ img, picture, svg {
       font-size: clamp(1.5rem, 7vw, 2rem);
     }
 
+    .hero-buttons {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 0.85rem;
+    }
+
+    .hero-buttons button,
+    .hero-buttons a {
+      width: 100%;
+    }
+
+    .preview-shell,
+    .clip-grid,
+    .flow-shell,
+    .mil-grid,
+    .mil-affiliations {
+      grid-template-columns: 1fr !important;
+      gap: 1.25rem;
+    }
+
     .preview-grid {
       grid-template-columns: 1fr;
+    }
+
+    .preview-shell {
+      gap: 1.5rem;
     }
 
     .about {
@@ -525,14 +678,14 @@ img, picture, svg {
       padding: 3.5rem 1.25rem 2.5rem;
     }
 
-    .hero-buttons {
-      flex-direction: column;
-      align-items: stretch;
+    .section-heading {
+      margin-bottom: 1.5rem;
     }
 
-    .hero-buttons button,
-    .hero-buttons a {
-      width: 100%;
+    .footer-shell {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 1rem;
     }
 }
 
@@ -557,7 +710,7 @@ img, picture, svg {
     }
 
     .hero {
-      padding: 3rem 1rem 2rem;
+      padding: 3rem 1rem 2.5rem;
     }
 
     .hero-content h1 {
@@ -568,8 +721,33 @@ img, picture, svg {
       font-size: clamp(1.3rem, 8vw, 1.8rem);
     }
 
+    .hero-buttons {
+      gap: 0.75rem;
+    }
+
     .footer {
       padding: 30px 16px 16px;
+    }
+
+    .preview-shell,
+    .clip-grid,
+    .flow-shell,
+    .mil-grid,
+    .mil-affiliations {
+      grid-template-columns: 1fr !important;
+      gap: 1.25rem;
+    }
+
+    .preview-media {
+      min-height: 220px;
+    }
+
+    .preview-card,
+    .clip-card,
+    .flow-card,
+    .mil-card,
+    .mil-affiliation {
+      min-width: 0;
     }
 
     .container {
@@ -631,6 +809,38 @@ img, picture, svg {
 /* How it works */
 .how-section{
   padding: 3.5rem 2rem;
+}
+
+/* Connector SVG that visually links the How-it-works cards */
+.how-section {
+  position: relative;
+}
+.how-connector {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+.how-connector svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+.how-connector-path {
+  stroke-dasharray: 1400;
+  stroke-dashoffset: 1400;
+  opacity: 0;
+  animation: drawLine 2.2s cubic-bezier(.22,.9,.33,1) forwards 0.6s, fadeIn 0.45s ease forwards 0.6s;
+}
+
+@keyframes drawLine {
+  to { stroke-dashoffset: 0; }
+}
+
+@keyframes fadeIn {
+  to { opacity: 1; }
 }
 .steps{
   display:grid;
@@ -844,52 +1054,70 @@ img, picture, svg {
 .mil-details {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 1rem;
+  gap: 1.75rem;
+  padding: 1.5rem 0 0;
+  border-top: 1px solid rgba(37,52,79,0.08);
 }
 .mil-details h3 {
-  margin: 0 0 0.55rem;
-  font-size: 1rem;
+  margin: 0 0 0.75rem;
+  font-size: 1.05rem;
 }
 .mil-details p {
   margin: 0;
   color: var(--slate-grey);
+  line-height: 1.85;
 }
 .mil-links {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.75rem;
-  align-items: center;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.85rem;
+  align-items: stretch;
+  padding-top: 1.25rem;
+}
+.mil-links a {
+  min-width: 0;
 }
 .mil-links .secondary-button,
 .mil-links .primary-button {
-  padding: 0.9rem 1.35rem;
+  padding: 1rem 1.45rem;
+  width: 100%;
+  text-align: center;
 }
 .mil-affiliations {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 1rem;
-  margin: 1.5rem 0 0.75rem;
+  margin: 1.75rem 0 0;
 }
 .mil-affiliation {
-  padding: 1rem 1.2rem;
+  padding: 1.25rem 1.4rem;
   border-radius: 18px;
-  background: rgba(255,255,255,0.95);
+  background: rgba(255,255,255,0.96);
   border: 1px solid rgba(37,52,79,0.08);
 }
 .mil-affiliation strong {
   display: block;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.65rem;
   color: var(--space-cadet);
+  font-size: 0.95rem;
 }
 .mil-affiliation span {
   color: var(--slate-grey);
-  font-size: 0.95rem;
-  line-height: 1.6;
+  font-size: 0.98rem;
+  line-height: 1.75;
 }
 @media (max-width: 900px) {
   .mil-grid,
   .mil-details,
   .mil-affiliations {
+    grid-template-columns: 1fr;
+  }
+
+  .mil-details {
+    padding-top: 1rem;
+  }
+
+  .mil-links {
     grid-template-columns: 1fr;
   }
 }
@@ -899,7 +1127,6 @@ img, picture, svg {
     padding: 3rem 1.5rem;
   }
 }
-
 @media (max-width: 640px) {
   .preview-grid {
     grid-template-columns: 1fr;
@@ -1199,6 +1426,7 @@ img, picture, svg {
 .container {
     max-width: 1200px;
     margin: auto;
+    padding: 0 1.5rem;
 }
 
 .footer-shell {

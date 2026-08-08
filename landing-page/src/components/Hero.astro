@@ -8,7 +8,59 @@
     <p class="hero-copy">A social trust layer for young people scrolling fast, spotting misleading posts, and protecting their community before the share.</p>
     <div class="hero-buttons">
       <a class="primary-button" href="/waitlist">Join the waitlist</a>
-      <a class="secondary-button" href="#preview">Explore the prototype</a>
+      <button class="secondary-button video-trigger" type="button" aria-expanded="false">Watch pitch</button>
     </div>
   </div>
+
+  <div class="video-modal" aria-hidden="true">
+    <div class="video-backdrop" aria-hidden="true"></div>
+    <div class="video-panel" role="dialog" aria-modal="true" aria-label="Continue to YouTube">
+      <button class="video-close" type="button" aria-label="Close dialog">×</button>
+      <div class="video-confirmation">
+        <p class="eyebrow">YouTube redirect</p>
+        <h3>You’ll be taken to YouTube to watch the pitch.</h3>
+        <p>Continue to the video in a new tab?</p>
+        <div class="video-actions">
+          <button class="secondary-button confirm-cancel" type="button">Cancel</button>
+          <a class="primary-button confirm-continue" href="https://youtu.be/joOn6gNSl18?si=w1bAhBrk6ALpExDx" target="_blank" rel="noreferrer">Continue</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script is:inline>
+    document.addEventListener('DOMContentLoaded', () => {
+      const trigger = document.querySelector('.video-trigger');
+      const modal = document.querySelector('.video-modal');
+      const closeBtn = document.querySelector('.video-close');
+      const cancelBtn = document.querySelector('.confirm-cancel');
+      const backdrop = document.querySelector('.video-backdrop');
+
+      const setModalOpen = (open) => {
+        if (!modal || !trigger) return;
+        modal.classList.toggle('is-open', open);
+        modal.setAttribute('aria-hidden', String(!open));
+        trigger.setAttribute('aria-expanded', String(open));
+        document.body.style.overflow = open ? 'hidden' : '';
+      };
+
+      if (trigger && modal) {
+        trigger.addEventListener('click', () => setModalOpen(true));
+      }
+      if (closeBtn) {
+        closeBtn.addEventListener('click', () => setModalOpen(false));
+      }
+      if (cancelBtn) {
+        cancelBtn.addEventListener('click', () => setModalOpen(false));
+      }
+      if (backdrop) {
+        backdrop.addEventListener('click', () => setModalOpen(false));
+      }
+      document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape' && modal?.classList.contains('is-open')) {
+          setModalOpen(false);
+        }
+      });
+    });
+  </script>
 </section>
