@@ -34,33 +34,3 @@
         <div class="nav-backdrop" aria-hidden="true"></div>
     </div>
 </nav>
-
-<script is:inline>
-  const menuButton = document.querySelector('.nav-toggle');
-  const navLinks = document.getElementById('nav-links');
-
-  if (menuButton && navLinks) {
-    const navBackdrop = document.querySelector('.nav-backdrop');
-
-    const closeMenu = () => {
-      navLinks.classList.remove('open');
-      menuButton.setAttribute('aria-expanded', 'false');
-      navBackdrop?.classList.remove('open');
-    };
-
-    menuButton.addEventListener('click', () => {
-      const expanded = menuButton.getAttribute('aria-expanded') === 'true';
-      menuButton.setAttribute('aria-expanded', String(!expanded));
-      navLinks.classList.toggle('open', !expanded);
-      navBackdrop?.classList.toggle('open', !expanded);
-    });
-
-    document.addEventListener('click', (event) => {
-      if (!navLinks.contains(event.target) && !menuButton.contains(event.target)) {
-        closeMenu();
-      }
-    });
-
-    navBackdrop?.addEventListener('click', closeMenu);
-  }
-</script>
