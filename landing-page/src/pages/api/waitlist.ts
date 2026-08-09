@@ -3,7 +3,7 @@ import type { APIRoute } from 'astro';
 import {
   createWaitlistEntry,
   DuplicateWaitlistEmailError,
-  MissingDatabaseUrlError,
+  MissingSupabaseConfigError,
 } from '../../lib/waitlist';
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -49,9 +49,9 @@ export const POST: APIRoute = async ({ request }) => {
       return jsonResponse('That email is already on the waitlist.', 409);
     }
 
-    if (error instanceof MissingDatabaseUrlError) {
+    if (error instanceof MissingSupabaseConfigError) {
       console.error(error.message);
-      return jsonResponse('The waitlist is not configured yet. Add DATABASE_URL and try again.', 500);
+      return jsonResponse('The waitlist is not configured yet. Add SUPABASE_URL and SUPABASE_KEY and make sure the waitlist_entries table exists.', 500);
     }
 
     console.error('Waitlist insert failed', error);

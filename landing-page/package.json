@@ -10,12 +10,13 @@
     "build": "astro build",
     "preview": "astro preview",
     "start": "node ./dist/server/entry.mjs",
-    "astro": "astro"
+    "astro": "astro",
+    "migrate": "node ./scripts/run-migrations.js"
   },
   "dependencies": {
     "@astrojs/node": "^11.0.2",
     "@astrojs/vercel": "^11.0.5",
-    "astro": "^7.2.0",
-    "postgres": "^3.4.9"
+    "@supabase/supabase-js": "^2.112.2",
+    "astro": "^7.2.0"
   }
 }

@@ -1,4 +1,4 @@
-import postgres from 'postgres';
+import { createClient } from '@supabase/supabase-js';
 
 export interface WaitlistEntryInput {
   name: string;
@@ -10,10 +10,10 @@ export interface WaitlistEntryRecord {
   created_at: string;
 }
 
-export class MissingDatabaseUrlError extends Error {
+export class MissingSupabaseConfigError extends Error {
   constructor() {
-    super('DATABASE_URL is not configured.');
-    this.name = 'MissingDatabaseUrlError';
+    super('SUPABASE_URL and SUPABASE_KEY are not configured.');
+    this.name = 'MissingSupabaseConfigError';
   }
 }
 
@@ -24,41 +24,59 @@ export class DuplicateWaitlistEmailError extends Error {
   }
 }
 
-let sqlClient: ReturnType<typeof postgres> | undefined;
+let supabaseClient: ReturnType<typeof createClient> | undefined;
 
-function getSql() {
-  if (sqlClient) {
-    return sqlClient;
+function getSupabaseClient() {
+  if (supabaseClient) {
+    return supabaseClient;
   }
 
-  const connectionString = import.meta.env.DATABASE_URL;
+  const supabaseUrl = import.meta.env.SUPABASE_URL;
+  const supabaseKey = import.meta.env.SUPABASE_KEY;
 
-  if (!connectionString) {
-    throw new MissingDatabaseUrlError();
+  if (!supabaseUrl || !supabaseKey) {
+    throw new MissingSupabaseConfigError();
   }
 
-  sqlClient = postgres(connectionString);
-  return sqlClient;
+  supabaseClient = createClient(supabaseUrl, supabaseKey, {
+    auth: {
+      persistSession: false,
+      autoRefreshToken: false,
+    },
+  });
+
+  return supabaseClient;
 }
 
 export async function createWaitlistEntry(
   input: WaitlistEntryInput,
 ): Promise<WaitlistEntryRecord> {
-  const sql = getSql();
+  const supabase = getSupabaseClient();
 
-  try {
-    const [entry] = await sql<WaitlistEntryRecord[]>`
-      insert into waitlist_entries (name, email)
-      values (${input.name}, ${input.email})
-      returning id, created_at
-    `;
+  const { data, error } = await (supabase as any)
+    .from('waitlist_entries')
+    .insert([{ name: input.name, email: input.email }]);
 
-    return entry;
-  } catch (error) {
-    if (error instanceof postgres.PostgresError && error.code === '23505') {
+  if (error) {
+    const message = error.message?.toLowerCase() ?? '';
+    const details = error.details?.toLowerCase() ?? '';
+
+    if (error.code === '23505' || message.includes('duplicate') || details.includes('duplicate')) {
       throw new DuplicateWaitlistEmailError(input.email);
     }
 
     throw error;
   }
+
+  const rows = Array.isArray(data) ? data : data ? [data] : [];
+  const firstRow = rows[0];
+
+  if (!firstRow || typeof firstRow !== 'object') {
+    throw new Error('Supabase insert did not return a record.');
+  }
+
+  return {
+    id: Number((firstRow as Record<string, unknown>).id ?? 0),
+    created_at: String((firstRow as Record<string, unknown>).created_at ?? ''),
+  };
 }
