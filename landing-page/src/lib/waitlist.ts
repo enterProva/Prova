@@ -68,15 +68,20 @@ export async function createWaitlistEntry(
     throw error;
   }
 
-  const rows = Array.isArray(data) ? data : data ? [data] : [];
-  const firstRow = rows[0];
+  if (!error && data !== null) {
+    const rows = Array.isArray(data) ? data : [data];
+    const firstRow = rows[0];
 
-  if (!firstRow || typeof firstRow !== 'object') {
-    throw new Error('Supabase insert did not return a record.');
+    if (firstRow && typeof firstRow === 'object') {
+      return {
+        id: Number((firstRow as Record<string, unknown>).id ?? 0),
+        created_at: String((firstRow as Record<string, unknown>).created_at ?? ''),
+      };
+    }
   }
 
   return {
-    id: Number((firstRow as Record<string, unknown>).id ?? 0),
-    created_at: String((firstRow as Record<string, unknown>).created_at ?? ''),
+    id: 0,
+    created_at: new Date().toISOString(),
   };
 }
