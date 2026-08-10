@@ -1485,7 +1485,9 @@ img, picture, svg {
         display: inline-flex;
     }
 
-    .nav-logo {
+    .nav-logo,
+    .nav-links .nav-logo,
+    .nav-links.open .nav-logo {
         display: none !important;
     }
 
