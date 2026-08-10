@@ -1522,7 +1522,9 @@ img, picture, svg {
         display: none;
         position: fixed;
         inset: 0;
-        background: rgba(15, 23, 42, 0.28);
+        background: rgba(255, 255, 255, 0.08);
+        backdrop-filter: blur(22px);
+        -webkit-backdrop-filter: blur(22px);
         z-index: 70;
         pointer-events: none;
         opacity: 0;
@@ -1533,6 +1535,15 @@ img, picture, svg {
         display: block;
         pointer-events: auto;
         opacity: 1;
+    }
+
+    .nav-toggle {
+        position: relative;
+        z-index: 90;
+    }
+
+    .menu-open {
+        overflow: hidden;
     }
 
     .nav-links li {
