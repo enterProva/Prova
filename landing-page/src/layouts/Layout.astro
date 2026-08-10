@@ -14,9 +14,6 @@ const csp = import.meta.env.DEV
 	: "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'self'; frame-ancestors 'none';";
 ---
 
-<SpeedInsights />
-<Analytics/>
-
 <!doctype html>
 <html lang="en">
 	<head>
@@ -41,6 +38,8 @@ const csp = import.meta.env.DEV
 	</head>
 	<body>
 		<slot />
+		<SpeedInsights />
+		<Analytics/>
 		<script src="/scripts/site.js" defer></script>
 	</body>
 </html>
