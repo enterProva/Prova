@@ -224,6 +224,8 @@ img, picture, svg {
   position: absolute;
   inset: 0;
   background: rgba(15, 23, 42, 0.86);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
 }
 
 .video-panel {
@@ -1518,23 +1520,24 @@ img, picture, svg {
         transform: translate(-50%, 0);
     }
 
+    /* Use the actual DOM backdrop element as the single overlay. */
     .nav-backdrop {
-        display: none;
-        position: fixed;
-        inset: 0;
-        background: rgba(255, 255, 255, 0.08);
-        backdrop-filter: blur(22px);
-        -webkit-backdrop-filter: blur(22px);
-        z-index: 70;
-        pointer-events: none;
-        opacity: 0;
-        transition: opacity 0.25s ease;
-    }
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(255, 255, 255, 0.10);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      z-index: 72; /* sits below nav-links (75) and above page content */
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.25s ease;
+      }
 
     .nav-backdrop.open {
-        display: block;
-        pointer-events: auto;
-        opacity: 1;
+      display: block;
+      pointer-events: auto;
+      opacity: 1;
     }
 
     .nav-toggle {
@@ -1542,20 +1545,7 @@ img, picture, svg {
         z-index: 90;
     }
 
-    .menu-open {
-        overflow: hidden;
-    }
-
-    .menu-open::before {
-        content: "";
-        position: fixed;
-        inset: 0;
-        background: rgba(255, 255, 255, 0.12);
-        backdrop-filter: blur(24px);
-        -webkit-backdrop-filter: blur(24px);
-        z-index: 72;
-        pointer-events: none;
-    }
+    .menu-open { overflow: hidden; }
 
     .nav-links li {
         width: 100%;
@@ -1563,20 +1553,7 @@ img, picture, svg {
         justify-content: center;
     }
 
-/* Production override: ensure backdrop-filter is present for mobile overlays.
-   Some build steps/minifiers can remove or reorder properties; make this rule
-   very specific and place it at the end so it survives and applies. */
-@media (max-width: 900px) {
-  .menu-open::before {
-    backdrop-filter: blur(24px) !important;
-    -webkit-backdrop-filter: blur(24px) !important;
-  }
-
-  .nav-backdrop.open {
-    backdrop-filter: blur(22px) !important;
-    -webkit-backdrop-filter: blur(22px) !important;
-  }
-}
+/* Consolidated overlay: no body pseudo-element. Use `.nav-backdrop` only. */
 
     .nav-links a {
         display: block;
