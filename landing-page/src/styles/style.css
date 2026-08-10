@@ -1546,6 +1546,17 @@ img, picture, svg {
         overflow: hidden;
     }
 
+    .menu-open::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        background: rgba(255, 255, 255, 0.12);
+        backdrop-filter: blur(24px);
+        -webkit-backdrop-filter: blur(24px);
+        z-index: 72;
+        pointer-events: none;
+    }
+
     .nav-links li {
         width: 100%;
         display: flex;
