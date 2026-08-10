@@ -1563,6 +1563,21 @@ img, picture, svg {
         justify-content: center;
     }
 
+/* Production override: ensure backdrop-filter is present for mobile overlays.
+   Some build steps/minifiers can remove or reorder properties; make this rule
+   very specific and place it at the end so it survives and applies. */
+@media (max-width: 900px) {
+  .menu-open::before {
+    backdrop-filter: blur(24px) !important;
+    -webkit-backdrop-filter: blur(24px) !important;
+  }
+
+  .nav-backdrop.open {
+    backdrop-filter: blur(22px) !important;
+    -webkit-backdrop-filter: blur(22px) !important;
+  }
+}
+
     .nav-links a {
         display: block;
         width: 100%;
