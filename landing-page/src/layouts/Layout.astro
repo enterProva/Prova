@@ -19,7 +19,7 @@ const csp = import.meta.env.DEV
 	<head>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
-        <meta http-equiv="Content-Security-Policy" content={csp} />
+		<!-- CSP is delivered via HTTP headers in production. -->
         <meta name="referrer" content="strict-origin-when-cross-origin" />
         <meta http-equiv="Permissions-Policy" content="geolocation=(), microphone=(), camera=(), payment=()" />
 	    <link rel="icon" type="image/png" href="/favicon-96x96.png?v=20260803" sizes="96x96" />
@@ -31,7 +31,7 @@ const csp = import.meta.env.DEV
 		<link rel="preconnect" href="https://fonts.googleapis.com">
 		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 		<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:wght@400;500;600;700&family=Figtree:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
-		<link rel="preload" href="/src/assets/fonts/text_font.ttf" as="font" type="font/ttf" crossorigin>
+		<!-- font is loaded via CSS; removed incorrect /src/ preload to avoid 404 -->
 		<meta name="generator" content={Astro.generator} />
 		<meta name="description" content={description} />
 		<title>{title}</title>

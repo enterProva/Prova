@@ -1,0 +1,13 @@
+{
+  "headers": [
+    {
+      "source": "(.*)",
+      "headers": [
+        {
+          "key": "Content-Security-Policy",
+          "value": "default-src 'self'; script-src 'self' 'sha256-z976GBlt1VpJRMwUsz77xRk4vxMYXvrGBrskH5nz1QI=' 'sha256-ewPoUMmhFj8fDW8oZ6ndisnCZtd6tZ1TpDQklfHW+5s='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'self'; frame-ancestors 'none';"
+        }
+      ]
+    }
+  ]
+}
