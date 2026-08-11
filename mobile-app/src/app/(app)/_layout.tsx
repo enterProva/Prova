@@ -1,5 +1,4 @@
 import { Tabs } from "expo-router";
-
 import { useTheme } from "@/hooks/use-theme";
 
 export default function AppTabsLayout() {
@@ -21,7 +20,8 @@ export default function AppTabsLayout() {
           backgroundColor: theme.background,
           borderTopColor: theme.border,
         },
-      }}>
+      }}
+    >
       <Tabs.Screen name="feed" options={{ title: "Feed" }} />
       <Tabs.Screen name="link-checker" options={{ title: "Link Checker" }} />
       <Tabs.Screen name="pause-nudges" options={{ title: "Pause" }} />
