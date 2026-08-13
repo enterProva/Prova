@@ -10,6 +10,17 @@
   --reveal-ease: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
+/* Selection highlight matches site accent */
+::selection {
+  background: var(--space-cadet);
+  color: var(--white);
+}
+
+::-moz-selection {
+  background: var(--space-cadet);
+  color: var(--white);
+}
+
 .reveal-enabled .reveal-on-scroll {
   opacity: 0;
   transform: translateY(22px);
@@ -1105,7 +1116,7 @@ img, picture, svg {
 .flow-glow {
   position: absolute;
   inset: 10% 15%;
-  background: radial-gradient(circle, rgba(118, 158, 255, 0.28) 0%, rgba(118, 158, 255, 0) 72%);
+  background: radial-gradient(circle, rgba(188, 82, 238, 0.28) 0%, rgba(188, 82, 238, 0) 72%);
   animation: pulseGlow 2.8s ease-in-out infinite;
 }
 .flow-screen {
