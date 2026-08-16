@@ -8,7 +8,7 @@ import Landing from "@/pages/landing";
 import AuthSelection from "@/pages/auth-selection";
 import Home from "@/pages/home";
 import NotFound from "@/pages/not-found";
-import { Analytics } from "@vercel/analytics/react"
+import { Analytics } from "@vercel/analytics/react";
 
 // App.tsx (ProtectedRoute)
 function ProtectedRoute({ component: Component }: { component: any }) {
@@ -50,7 +50,7 @@ export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
       {showIntroSplash ? <SplashScreen /> : <Router />}
-    <Analytics/>
+      <Analytics />
     </QueryClientProvider>
   );
 }
