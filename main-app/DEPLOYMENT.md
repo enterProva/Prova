@@ -6,6 +6,15 @@ This guide covers deploying the full-stack application:
 - **Frontend (Vite React)** → Vercel
 - **Backend (Express.js)** → Render
 
+**⚠️ IMPORTANT**: Your repository is a **monorepo** with multiple apps (`main-app`, `landing-page`, `mobile-app`, `expo-app`). You must tell both platforms which subdirectory to deploy.
+
+## Monorepo Configuration
+
+- **Render**: Set `Root Directory` to `main-app` (automatic via `render.yaml`)
+- **Vercel**: Set `Root Directory` to `main-app` in project settings
+
+See `RENDER_MONOREPO_GUIDE.md` for detailed monorepo setup instructions.
+
 ## Architecture
 
 ```

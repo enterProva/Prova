@@ -1,8 +1,14 @@
+# Render Deployment Configuration for main-app
+# This file is used by Render when deploying from the monorepo
+# Reference: https://render.com/docs/render-yaml-spec
+
 services:
   - type: web
     name: pause-protect-backend
     env: node
     plan: standard
+    # Important: Point to main-app subdirectory since this is a monorepo
+    rootDir: main-app
     buildCommand: npm run build
     startCommand: npm start
     envVars:
