@@ -1,0 +1,874 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PPP - Pause, Prove & Protect</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        'inter': ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        primary: '#3B82F6',
+                        success: '#10B981',
+                        warning: '#F59E0B',
+                        danger: '#EF4444',
+                        'gray-50': '#FAFAFA',
+                    }
+                }
+            }
+        };
+    </script>
+</head>
+<body class="font-inter bg-gray-50 text-gray-900">
+
+    <!-- @COMPONENT: SplashScreen [initial loading animation] -->
+    <div id="splash-screen" class="fixed inset-0 bg-primary flex items-center justify-center z-50 transition-opacity duration-1000">
+        <div class="text-center">
+            <div class="w-24 h-24 bg-white rounded-full flex items-center justify-center mb-6 mx-auto animate-pulse">
+                <i class="fas fa-shield-alt text-4xl text-primary"></i>
+            </div>
+            <h1 class="text-4xl font-bold text-white mb-2">PPP</h1>
+            <p class="text-blue-100">Pause, Prove & Protect</p>
+        </div>
+    </div>
+    <!-- @END_COMPONENT: SplashScreen -->
+
+    <!-- @COMPONENT: LandingPage [initial user onboarding] -->
+    <div id="landing-page" class="hidden min-h-screen bg-gradient-to-br from-primary to-blue-600 flex items-center justify-center px-4">
+        <div class="max-w-md w-full text-center">
+            <div class="w-20 h-20 bg-white rounded-full flex items-center justify-center mb-8 mx-auto">
+                <i class="fas fa-shield-alt text-3xl text-primary"></i>
+            </div>
+            <h1 class="text-4xl font-bold text-white mb-4">Welcome to PPP</h1>
+            <p class="text-blue-100 text-lg mb-8 leading-relaxed">An interactive tool that helps you pause, verify, and protect yourself from misinformation.</p>
+            <button onclick="showAuthSelection()" class="w-full bg-white text-primary font-semibold py-4 px-6 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">
+                Continue
+            </button>
+        </div>
+    </div>
+    <!-- @END_COMPONENT: LandingPage -->
+
+    <!-- @COMPONENT: AuthSelection [login/guest mode choice] -->
+    <div id="auth-selection" class="hidden min-h-screen bg-gradient-to-br from-primary to-blue-600 flex items-center justify-center px-4">
+        <div class="max-w-md w-full">
+            <div class="bg-white rounded-2xl shadow-2xl p-8">
+                <div class="text-center mb-8">
+                    <div class="w-16 h-16 bg-primary rounded-full flex items-center justify-center mb-4 mx-auto">
+                        <i class="fas fa-shield-alt text-2xl text-white"></i>
+                    </div>
+                    <h2 class="text-2xl font-bold mb-2">Get Started</h2>
+                    <p class="text-gray-600">Choose how you'd like to proceed</p>
+                </div>
+                
+                <div class="space-y-4">
+                    <button onclick="showMainApp()" class="w-full bg-primary text-white font-semibold py-4 px-6 rounded-xl hover:bg-blue-600 transition-colors duration-300">
+                        <i class="fas fa-user mr-2"></i>
+                        Login / Sign Up
+                    </button>
+                    <button onclick="showMainApp()" class="w-full border-2 border-gray-200 text-gray-700 font-semibold py-4 px-6 rounded-xl hover:border-primary hover:text-primary transition-colors duration-300">
+                        <i class="fas fa-eye mr-2"></i>
+                        Continue as Guest
+                    </button>
+                </div>
+                
+                <p class="text-xs text-gray-500 text-center mt-6">Guest mode has limited features</p>
+            </div>
+        </div>
+    </div>
+    <!-- @END_COMPONENT: AuthSelection -->
+
+    <!-- @COMPONENT: MainApp [primary application interface] -->
+    <div id="main-app" class="hidden min-h-screen bg-gray-50">
+        <!-- Mobile Header -->
+        <div class="lg:hidden bg-white shadow-sm border-b px-4 py-3 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
+                    <i class="fas fa-shield-alt text-white text-sm"></i>
+                </div>
+                <h1 class="font-bold text-lg">PPP</h1>
+            </div>
+            <button onclick="toggleMobileSidebar()" class="p-2">
+                <i class="fas fa-bars text-gray-600"></i>
+            </button>
+        </div>
+
+        <div class="flex">
+            <!-- Sidebar Navigation -->
+            <!-- @COMPONENT: Sidebar [main navigation menu] -->
+            <div id="sidebar" class="hidden lg:block fixed lg:relative inset-y-0 left-0 z-30 w-64 bg-white shadow-lg border-r transform transition-transform duration-300 lg:transform-none">
+                <div class="p-6 border-b">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-10 h-10 bg-primary rounded-xl flex items-center justify-center">
+                            <i class="fas fa-shield-alt text-white"></i>
+                        </div>
+                        <div>
+                            <h1 class="font-bold text-xl">PPP</h1>
+                            <p class="text-xs text-gray-500">Pause, Prove & Protect</p>
+                        </div>
+                    </div>
+                </div>
+
+                <nav class="p-4 space-y-2">
+                    <a href="#" onclick="showTab('feed')" class="nav-item active flex items-center space-x-3 p-3 rounded-xl hover:bg-gray-50 transition-colors duration-200">
+                        <i class="fas fa-home w-5"></i>
+                        <span class="font-medium">Feed</span>
+                    </a>
+                    <a href="#" onclick="showTab('link-checker')" class="nav-item flex items-center space-x-3 p-3 rounded-xl hover:bg-gray-50 transition-colors duration-200">
+                        <i class="fas fa-search w-5"></i>
+                        <span class="font-medium">Link Checker</span>
+                    </a>
+                    <a href="#" onclick="showTab('pause-nudges')" class="nav-item flex items-center space-x-3 p-3 rounded-xl hover:bg-gray-50 transition-colors duration-200">
+                        <i class="fas fa-pause-circle w-5"></i>
+                        <span class="font-medium">Pause Nudges</span>
+                    </a>
+                    <a href="#" onclick="showTab('learn')" class="nav-item flex items-center space-x-3 p-3 rounded-xl hover:bg-gray-50 transition-colors duration-200">
+                        <i class="fas fa-graduation-cap w-5"></i>
+                        <span class="font-medium">Learn</span>
+                    </a>
+                    <a href="#" onclick="showTab('community')" class="nav-item flex items-center space-x-3 p-3 rounded-xl hover:bg-gray-50 transition-colors duration-200">
+                        <i class="fas fa-users w-5"></i>
+                        <span class="font-medium">Community</span>
+                    </a>
+                    <a href="#" onclick="showTab('social-companion')" class="nav-item flex items-center space-x-3 p-3 rounded-xl hover:bg-gray-50 transition-colors duration-200">
+                        <i class="fas fa-robot w-5"></i>
+                        <span class="font-medium">Social Companion</span>
+                        <span class="bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded-full ml-auto">Soon</span>
+                    </a>
+                    <a href="#" onclick="showTab('advanced-ai')" class="nav-item flex items-center space-x-3 p-3 rounded-xl hover:bg-gray-50 transition-colors duration-200">
+                        <i class="fas fa-brain w-5"></i>
+                        <span class="font-medium">Advanced AI</span>
+                        <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full ml-auto">Beta</span>
+                    </a>
+                </nav>
+
+                <div class="absolute bottom-0 left-0 right-0 p-4 border-t">
+                    <a href="#" onclick="showTab('profile')" class="nav-item flex items-center space-x-3 p-3 rounded-xl hover:bg-gray-50 transition-colors duration-200">
+                        <div class="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center">
+                            <span class="text-white text-sm font-semibold" data-mock="true">JD</span>
+                        </div>
+                        <div>
+                            <p class="font-medium text-sm" data-bind="user.name">John Doe</p>
+                            <p class="text-xs text-gray-500">View Profile</p>
+                        </div>
+                    </a>
+                </div>
+            </div>
+            <!-- @END_COMPONENT: Sidebar -->
+
+            <!-- Main Content Area -->
+            <div class="flex-1 lg:ml-0">
+                <!-- @COMPONENT: FeedTab [social feed with fact-checked content] -->
+                <div id="feed-tab" class="tab-content p-4 lg:p-6">
+                    <div class="max-w-2xl mx-auto">
+                        <div class="mb-6">
+                            <h2 class="text-2xl font-bold mb-2">Your Feed</h2>
+                            <p class="text-gray-600">Stay informed with verified content and community insights</p>
+                        </div>
+
+                        <!-- Stats Cards -->
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                            <div class="bg-white rounded-2xl p-6 shadow-sm border">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <p class="text-gray-600 text-sm">Links Checked</p>
+                                        <p class="text-2xl font-bold text-primary" data-bind="user.linksChecked">42</p>
+                                    </div>
+                                    <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
+                                        <i class="fas fa-search text-primary"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="bg-white rounded-2xl p-6 shadow-sm border">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <p class="text-gray-600 text-sm">Streak</p>
+                                        <p class="text-2xl font-bold text-success" data-bind="user.streak">7 days</p>
+                                    </div>
+                                    <div class="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
+                                        <i class="fas fa-fire text-success"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="bg-white rounded-2xl p-6 shadow-sm border">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <p class="text-gray-600 text-sm">Trust Score</p>
+                                        <p class="text-2xl font-bold text-warning" data-bind="user.trustScore">85%</p>
+                                    </div>
+                                    <div class="w-12 h-12 bg-yellow-100 rounded-xl flex items-center justify-center">
+                                        <i class="fas fa-medal text-warning"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Feed Posts -->
+                        <!-- @MAP: feedPosts.map(post => ( -->
+                        <div class="space-y-6">
+                            <!-- Verified Post -->
+                            <div class="bg-white rounded-2xl shadow-sm border p-6">
+                                <div class="flex items-start space-x-4">
+                                    <!-- A professional woman reading news on her smartphone in a modern office setting -->
+                                    <img src="https://pixabay.com/get/gac3798616246407b12ce6e02b07dd84b15998a4d8cc2e23ed0ad1199559068ca8f2a45fdc5adf3249ab088e1a6ee0c40b483b8e6ccfe66c72c80466ad2f00be4_1280.jpg" alt="Profile picture" class="w-12 h-12 rounded-full object-cover" data-mock="true" />
+                                    <div class="flex-1">
+                                        <div class="flex items-center space-x-2 mb-2">
+                                            <h4 class="font-semibold" data-mock="true">Sarah Johnson</h4>
+                                            <span class="bg-success text-white text-xs px-2 py-1 rounded-full flex items-center">
+                                                <i class="fas fa-check mr-1"></i> Verified
+                                            </span>
+                                            <span class="text-gray-500 text-sm" data-mock="true">2h ago</span>
+                                        </div>
+                                        <p class="text-gray-800 mb-4" data-mock="true">Climate change research shows promising developments in renewable energy adoption across major cities.</p>
+                                        <!-- A modern city skyline with solar panels and wind turbines visible -->
+                                        <img src="https://images.unsplash.com/photo-1466611653911-95081537e5b7?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=300" alt="Renewable energy in city" class="w-full h-48 object-cover rounded-xl mb-4" data-mock="true" />
+                                        
+                                        <div class="flex items-center justify-between">
+                                            <div class="flex items-center space-x-4">
+                                                <button class="flex items-center space-x-2 text-gray-600 hover:text-primary">
+                                                    <i class="fas fa-thumbs-up"></i>
+                                                    <span data-mock="true">24</span>
+                                                </button>
+                                                <button class="flex items-center space-x-2 text-gray-600 hover:text-primary">
+                                                    <i class="fas fa-comment"></i>
+                                                    <span data-mock="true">8</span>
+                                                </button>
+                                                <button class="flex items-center space-x-2 text-gray-600 hover:text-primary">
+                                                    <i class="fas fa-share"></i>
+                                                    <span data-mock="true">Share</span>
+                                                </button>
+                                            </div>
+                                            <div class="flex items-center space-x-1 text-success">
+                                                <i class="fas fa-shield-alt text-sm"></i>
+                                                <span class="text-sm font-medium">Fact-checked</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Misleading Post -->
+                            <div class="bg-white rounded-2xl shadow-sm border p-6">
+                                <div class="flex items-start space-x-4">
+                                    <!-- A young man looking concerned while reading news on his tablet -->
+                                    <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&h=150" alt="Profile picture" class="w-12 h-12 rounded-full object-cover" data-mock="true" />
+                                    <div class="flex-1">
+                                        <div class="flex items-center space-x-2 mb-2">
+                                            <h4 class="font-semibold" data-mock="true">Mike Chen</h4>
+                                            <span class="bg-warning text-white text-xs px-2 py-1 rounded-full flex items-center">
+                                                <i class="fas fa-exclamation-triangle mr-1"></i> Misleading
+                                            </span>
+                                            <span class="text-gray-500 text-sm" data-mock="true">4h ago</span>
+                                        </div>
+                                        <p class="text-gray-800 mb-4" data-mock="true">Breaking: New study claims coffee consumption directly linked to increased productivity by 300%</p>
+                                        
+                                        <div class="bg-yellow-50 border-l-4 border-warning p-4 mb-4 rounded-r-xl">
+                                            <div class="flex items-start space-x-3">
+                                                <i class="fas fa-exclamation-triangle text-warning mt-1"></i>
+                                                <div>
+                                                    <h5 class="font-semibold text-warning mb-1">Fact-Check Alert</h5>
+                                                    <p class="text-sm text-gray-700">This claim is misleading. The referenced study has significant limitations and the 300% figure is taken out of context.</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="flex items-center justify-between">
+                                            <div class="flex items-center space-x-4">
+                                                <button class="flex items-center space-x-2 text-gray-600 hover:text-primary">
+                                                    <i class="fas fa-thumbs-up"></i>
+                                                    <span data-mock="true">5</span>
+                                                </button>
+                                                <button class="flex items-center space-x-2 text-gray-600 hover:text-primary">
+                                                    <i class="fas fa-comment"></i>
+                                                    <span data-mock="true">12</span>
+                                                </button>
+                                                <button class="flex items-center space-x-2 text-gray-600 hover:text-primary">
+                                                    <i class="fas fa-flag"></i>
+                                                    <span data-mock="true">Report</span>
+                                                </button>
+                                            </div>
+                                            <button class="bg-warning text-white px-4 py-2 rounded-xl text-sm font-medium hover:bg-yellow-600 transition-colors duration-200">
+                                                Learn More
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- @END_MAP )) -->
+                    </div>
+                </div>
+                <!-- @END_COMPONENT: FeedTab -->
+
+                <!-- @COMPONENT: LinkCheckerTab [URL verification tool] -->
+                <div id="link-checker-tab" class="tab-content hidden p-4 lg:p-6">
+                    <div class="max-w-2xl mx-auto">
+                        <div class="mb-6">
+                            <h2 class="text-2xl font-bold mb-2">Link Checker</h2>
+                            <p class="text-gray-600">Verify the credibility of any link or article</p>
+                        </div>
+
+                        <!-- Link Input Form -->
+                        <div class="bg-white rounded-2xl shadow-sm border p-6 mb-6">
+                            <div class="mb-4">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Paste your link here</label>
+                                <div class="flex space-x-3">
+                                    <input type="url" id="link-input" placeholder="https://example.com/article" class="flex-1 px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent" />
+                                    <button onclick="checkLink()" class="bg-primary text-white px-6 py-3 rounded-xl font-medium hover:bg-blue-600 transition-colors duration-200">
+                                        <i class="fas fa-search mr-2"></i>Check
+                                    </button>
+                                </div>
+                            </div>
+                            <p class="text-sm text-gray-500">We'll analyze the content and check it against trusted fact-checking sources</p>
+                        </div>
+
+                        <!-- Results Section -->
+                        <div id="check-results" class="hidden">
+                            <!-- Verified Result -->
+                            <div class="bg-white rounded-2xl shadow-sm border p-6 mb-6">
+                                <div class="flex items-start space-x-4">
+                                    <div class="w-16 h-16 bg-success rounded-xl flex items-center justify-center flex-shrink-0">
+                                        <i class="fas fa-check text-white text-xl"></i>
+                                    </div>
+                                    <div class="flex-1">
+                                        <h3 class="text-xl font-bold text-success mb-2">Verified Content</h3>
+                                        <p class="text-gray-700 mb-4" data-mock="true">This article appears to be from a credible source and contains factual information based on our analysis.</p>
+                                        
+                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                                            <div class="bg-gray-50 rounded-xl p-4">
+                                                <h4 class="font-semibold mb-2">Source Analysis</h4>
+                                                <div class="space-y-2">
+                                                    <div class="flex justify-between">
+                                                        <span class="text-sm text-gray-600">Credibility</span>
+                                                        <span class="text-sm font-medium text-success">High</span>
+                                                    </div>
+                                                    <div class="flex justify-between">
+                                                        <span class="text-sm text-gray-600">Bias Rating</span>
+                                                        <span class="text-sm font-medium text-success">Low</span>
+                                                    </div>
+                                                    <div class="flex justify-between">
+                                                        <span class="text-sm text-gray-600">Fact-Check Score</span>
+                                                        <span class="text-sm font-medium text-success">9.2/10</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="bg-gray-50 rounded-xl p-4">
+                                                <h4 class="font-semibold mb-2">Content Insights</h4>
+                                                <div class="space-y-2">
+                                                    <div class="flex justify-between">
+                                                        <span class="text-sm text-gray-600">Date Published</span>
+                                                        <span class="text-sm font-medium" data-mock="true">Dec 2023</span>
+                                                    </div>
+                                                    <div class="flex justify-between">
+                                                        <span class="text-sm text-gray-600">Sources Cited</span>
+                                                        <span class="text-sm font-medium" data-mock="true">8</span>
+                                                    </div>
+                                                    <div class="flex justify-between">
+                                                        <span class="text-sm text-gray-600">Expert Review</span>
+                                                        <span class="text-sm font-medium text-success">Available</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="flex items-center justify-between">
+                                            <div class="flex items-center space-x-3">
+                                                <button class="bg-success text-white px-4 py-2 rounded-xl text-sm font-medium hover:bg-green-600 transition-colors duration-200">
+                                                    <i class="fas fa-share mr-2"></i>Share Result
+                                                </button>
+                                                <button class="border border-gray-300 text-gray-700 px-4 py-2 rounded-xl text-sm font-medium hover:border-gray-400 transition-colors duration-200">
+                                                    <i class="fas fa-bookmark mr-2"></i>Save
+                                                </button>
+                                            </div>
+                                            <span class="text-sm text-gray-500">Checked by Snopes, IFCN</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Recent Checks -->
+                        <div class="bg-white rounded-2xl shadow-sm border p-6">
+                            <h3 class="text-lg font-semibold mb-4">Recent Checks</h3>
+                            <div class="space-y-3">
+                                <!-- @MAP: recentChecks.map(check => ( -->
+                                <div class="flex items-center justify-between p-3 bg-gray-50 rounded-xl" data-mock="true">
+                                    <div class="flex items-center space-x-3">
+                                        <div class="w-8 h-8 bg-success rounded-lg flex items-center justify-center">
+                                            <i class="fas fa-check text-white text-sm"></i>
+                                        </div>
+                                        <div>
+                                            <p class="font-medium text-sm truncate max-w-xs">Climate change study findings...</p>
+                                            <p class="text-xs text-gray-500">2 hours ago</p>
+                                        </div>
+                                    </div>
+                                    <span class="text-xs bg-success text-white px-2 py-1 rounded-full">Verified</span>
+                                </div>
+                                <div class="flex items-center justify-between p-3 bg-gray-50 rounded-xl" data-mock="true">
+                                    <div class="flex items-center space-x-3">
+                                        <div class="w-8 h-8 bg-warning rounded-lg flex items-center justify-center">
+                                            <i class="fas fa-exclamation-triangle text-white text-sm"></i>
+                                        </div>
+                                        <div>
+                                            <p class="font-medium text-sm truncate max-w-xs">Coffee productivity claim...</p>
+                                            <p class="text-xs text-gray-500">1 day ago</p>
+                                        </div>
+                                    </div>
+                                    <span class="text-xs bg-warning text-white px-2 py-1 rounded-full">Misleading</span>
+                                </div>
+                                <!-- @END_MAP )) -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- @END_COMPONENT: LinkCheckerTab -->
+
+                <!-- @COMPONENT: PauseNudgesTab [reflection prompts] -->
+                <div id="pause-nudges-tab" class="tab-content hidden p-4 lg:p-6">
+                    <div class="max-w-2xl mx-auto">
+                        <div class="mb-6">
+                            <h2 class="text-2xl font-bold mb-2">Pause Nudges</h2>
+                            <p class="text-gray-600">Take a moment to reflect before sharing or reacting</p>
+                        </div>
+
+                        <!-- Active Nudge -->
+                        <div class="bg-gradient-to-r from-blue-500 to-purple-600 rounded-2xl shadow-lg p-8 text-white mb-6">
+                            <div class="text-center">
+                                <div class="w-16 h-16 bg-white bg-opacity-20 rounded-full flex items-center justify-center mx-auto mb-4">
+                                    <i class="fas fa-pause text-2xl"></i>
+                                </div>
+                                <h3 class="text-xl font-bold mb-3">Before you share...</h3>
+                                <p class="text-lg mb-6" data-mock="true">Have you read beyond the headline?</p>
+                                <div class="flex space-x-4 justify-center">
+                                    <button class="bg-white text-primary px-6 py-3 rounded-xl font-medium hover:bg-gray-100 transition-colors duration-200">
+                                        Yes, I've read it
+                                    </button>
+                                    <button class="border border-white px-6 py-3 rounded-xl font-medium hover:bg-white hover:bg-opacity-10 transition-colors duration-200">
+                                        Let me read first
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Nudge Categories -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                            <div class="bg-white rounded-2xl shadow-sm border p-6">
+                                <div class="flex items-center space-x-3 mb-4">
+                                    <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
+                                        <i class="fas fa-book-open text-primary"></i>
+                                    </div>
+                                    <h3 class="font-semibold">Reading Prompts</h3>
+                                </div>
+                                <ul class="space-y-2 text-sm text-gray-600">
+                                    <li data-mock="true">• Did you read the full article?</li>
+                                    <li data-mock="true">• Have you checked the source?</li>
+                                    <li data-mock="true">• Are there multiple perspectives?</li>
+                                    <li data-mock="true">• Is this from a recent date?</li>
+                                </ul>
+                            </div>
+
+                            <div class="bg-white rounded-2xl shadow-sm border p-6">
+                                <div class="flex items-center space-x-3 mb-4">
+                                    <div class="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
+                                        <i class="fas fa-heart text-success"></i>
+                                    </div>
+                                    <h3 class="font-semibold">Emotional Check</h3>
+                                </div>
+                                <ul class="space-y-2 text-sm text-gray-600">
+                                    <li data-mock="true">• How does this make you feel?</li>
+                                    <li data-mock="true">• Are you reacting emotionally?</li>
+                                    <li data-mock="true">• Would you share this in person?</li>
+                                    <li data-mock="true">• Is this helping or hurting?</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- Progress Tracking -->
+                        <div class="bg-white rounded-2xl shadow-sm border p-6">
+                            <h3 class="text-lg font-semibold mb-4">Your Mindful Sharing Journey</h3>
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <div class="text-center">
+                                    <div class="w-16 h-16 bg-primary rounded-full flex items-center justify-center mx-auto mb-3">
+                                        <span class="text-white font-bold text-xl" data-bind="user.pauseCount">23</span>
+                                    </div>
+                                    <p class="font-medium">Pauses Taken</p>
+                                    <p class="text-sm text-gray-500">This week</p>
+                                </div>
+                                <div class="text-center">
+                                    <div class="w-16 h-16 bg-success rounded-full flex items-center justify-center mx-auto mb-3">
+                                        <span class="text-white font-bold text-xl" data-bind="user.mindfulShares">18</span>
+                                    </div>
+                                    <p class="font-medium">Mindful Shares</p>
+                                    <p class="text-sm text-gray-500">This week</p>
+                                </div>
+                                <div class="text-center">
+                                    <div class="w-16 h-16 bg-warning rounded-full flex items-center justify-center mx-auto mb-3">
+                                        <span class="text-white font-bold text-xl" data-bind="user.streakDays">7</span>
+                                    </div>
+                                    <p class="font-medium">Day Streak</p>
+                                    <p class="text-sm text-gray-500">Keep it up!</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- @END_COMPONENT: PauseNudgesTab -->
+
+                <!-- @COMPONENT: LearnTab [educational micro-lessons] -->
+                <div id="learn-tab" class="tab-content hidden p-4 lg:p-6">
+                    <div class="max-w-2xl mx-auto">
+                        <div class="mb-6">
+                            <h2 class="text-2xl font-bold mb-2">Learn</h2>
+                            <p class="text-gray-600">Master the art of identifying and avoiding misinformation</p>
+                        </div>
+
+                        <!-- Progress Overview -->
+                        <div class="bg-gradient-to-r from-green-500 to-blue-600 rounded-2xl shadow-lg p-6 text-white mb-6">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <h3 class="text-xl font-bold mb-2">Your Learning Progress</h3>
+                                    <p class="text-green-100 mb-4" data-bind="user.completedLessons">3 of 12 lessons completed</p>
+                                    <div class="w-48 bg-white bg-opacity-20 rounded-full h-3">
+                                        <div class="bg-white h-3 rounded-full" style="width: 25%"></div>
+                                    </div>
+                                </div>
+                                <!-- A diverse group of students engaged in digital literacy education in a modern classroom -->
+                                <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?ixlib=rb-4.0.3&auto=format&fit=crop&w=120&h=120" alt="Learning illustration" class="w-20 h-20 rounded-xl object-cover" />
+                            </div>
+                        </div>
+
+                        <!-- Lesson Categories -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                            <!-- Basics Category -->
+                            <div class="bg-white rounded-2xl shadow-sm border p-6">
+                                <div class="flex items-center space-x-3 mb-4">
+                                    <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
+                                        <i class="fas fa-seedling text-primary"></i>
+                                    </div>
+                                    <div>
+                                        <h3 class="font-semibold">The Basics</h3>
+                                        <p class="text-sm text-gray-500">Essential knowledge</p>
+                                    </div>
+                                </div>
+                                <div class="space-y-3">
+                                    <div class="flex items-center justify-between p-3 bg-gray-50 rounded-xl">
+                                        <div class="flex items-center space-x-3">
+                                            <div class="w-8 h-8 bg-success rounded-lg flex items-center justify-center">
+                                                <i class="fas fa-check text-white text-sm"></i>
+                                            </div>
+                                            <span class="font-medium text-sm" data-mock="true">What is Misinformation?</span>
+                                        </div>
+                                        <span class="text-xs text-success">Completed</span>
+                                    </div>
+                                    <div class="flex items-center justify-between p-3 bg-gray-50 rounded-xl">
+                                        <div class="flex items-center space-x-3">
+                                            <div class="w-8 h-8 bg-success rounded-lg flex items-center justify-center">
+                                                <i class="fas fa-check text-white text-sm"></i>
+                                            </div>
+                                            <span class="font-medium text-sm" data-mock="true">Identifying Reliable Sources</span>
+                                        </div>
+                                        <span class="text-xs text-success">Completed</span>
+                                    </div>
+                                    <div class="flex items-center justify-between p-3 bg-primary bg-opacity-10 rounded-xl border-2 border-primary">
+                                        <div class="flex items-center space-x-3">
+                                            <div class="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
+                                                <i class="fas fa-play text-white text-sm"></i>
+                                            </div>
+                                            <span class="font-medium text-sm" data-mock="true">Fact-Checking Techniques</span>
+                                        </div>
+                                        <span class="text-xs text-primary">In Progress</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Advanced Category -->
+                            <div class="bg-white rounded-2xl shadow-sm border p-6">
+                                <div class="flex items-center space-x-3 mb-4">
+                                    <div class="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center">
+                                        <i class="fas fa-brain text-purple-600"></i>
+                                    </div>
+                                    <div>
+                                        <h3 class="font-semibold">Advanced Skills</h3>
+                                        <p class="text-sm text-gray-500">Expert techniques</p>
+                                    </div>
+                                </div>
+                                <div class="space-y-3">
+                                    <div class="flex items-center justify-between p-3 bg-gray-50 rounded-xl opacity-50">
+                                        <div class="flex items-center space-x-3">
+                                            <div class="w-8 h-8 bg-gray-300 rounded-lg flex items-center justify-center">
+                                                <i class="fas fa-lock text-gray-500 text-sm"></i>
+                                            </div>
+                                            <span class="font-medium text-sm text-gray-500" data-mock="true">Deepfake Detection</span>
+                                        </div>
+                                        <span class="text-xs text-gray-400">Locked</span>
+                                    </div>
+                                    <div class="flex items-center justify-between p-3 bg-gray-50 rounded-xl opacity-50">
+                                        <div class="flex items-center space-x-3">
+                                            <div class="w-8 h-8 bg-gray-300 rounded-lg flex items-center justify-center">
+                                                <i class="fas fa-lock text-gray-500 text-sm"></i>
+                                            </div>
+                                            <span class="font-medium text-sm text-gray-500" data-mock="true">Bias Recognition</span>
+                                        </div>
+                                        <span class="text-xs text-gray-400">Locked</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Current Lesson -->
+                        <div class="bg-white rounded-2xl shadow-sm border p-6">
+                            <div class="flex items-center space-x-3 mb-6">
+                                <div class="w-12 h-12 bg-primary rounded-xl flex items-center justify-center">
+                                    <i class="fas fa-search text-white"></i>
+                                </div>
+                                <div>
+                                    <h3 class="text-xl font-semibold" data-mock="true">Lesson 3: Fact-Checking Techniques</h3>
+                                    <p class="text-gray-600" data-mock="true">Learn the systematic approach to verifying information</p>
+                                </div>
+                            </div>
+
+                            <!-- A person using multiple devices to cross-reference information from different news sources -->
+                            <img src="https://images.unsplash.com/photo-1504384308090-c894fdcc538d?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=300" alt="Fact-checking workspace" class="w-full h-48 object-cover rounded-xl mb-6" />
+
+                            <div class="space-y-4 mb-6">
+                                <div class="flex items-start space-x-3">
+                                    <div class="w-6 h-6 bg-primary rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                                        <span class="text-white text-xs font-bold">1</span>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-semibold mb-1" data-mock="true">Cross-Reference Sources</h4>
+                                        <p class="text-gray-600 text-sm" data-mock="true">Always check if the same information is reported by multiple credible sources.</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start space-x-3">
+                                    <div class="w-6 h-6 bg-primary rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                                        <span class="text-white text-xs font-bold">2</span>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-semibold mb-1" data-mock="true">Check Publication Date</h4>
+                                        <p class="text-gray-600 text-sm" data-mock="true">Ensure the information is current and hasn't been taken out of temporal context.</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start space-x-3">
+                                    <div class="w-6 h-6 bg-primary rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                                        <span class="text-white text-xs font-bold">3</span>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-semibold mb-1" data-mock="true">Verify with Fact-Checkers</h4>
+                                        <p class="text-gray-600 text-sm" data-mock="true">Use established fact-checking organizations like Snopes, PolitiFact, or FactCheck.org.</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="flex space-x-4">
+                                <button class="bg-primary text-white px-6 py-3 rounded-xl font-medium hover:bg-blue-600 transition-colors duration-200">
+                                    Continue Lesson
+                                </button>
+                                <button class="border border-gray-300 text-gray-700 px-6 py-3 rounded-xl font-medium hover:border-gray-400 transition-colors duration-200">
+                                    Take Quiz
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- @END_COMPONENT: LearnTab -->
+
+                <!-- Other tabs (Community, Social Companion, Advanced AI, Profile) with placeholder content -->
+                <div id="community-tab" class="tab-content hidden p-4 lg:p-6">
+                    <div class="max-w-2xl mx-auto text-center py-20">
+                        <div class="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                            <i class="fas fa-users text-4xl text-gray-400"></i>
+                        </div>
+                        <h2 class="text-2xl font-bold mb-4">Community Features</h2>
+                        <p class="text-gray-600 mb-8">Connect with fellow fact-checkers and join the fight against misinformation</p>
+                        <div class="bg-yellow-100 border border-yellow-300 rounded-xl p-4 inline-block">
+                            <span class="text-yellow-800 font-medium">Coming Soon</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="social-companion-tab" class="tab-content hidden p-4 lg:p-6">
+                    <div class="max-w-2xl mx-auto text-center py-20">
+                        <div class="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                            <i class="fas fa-robot text-4xl text-gray-400"></i>
+                        </div>
+                        <h2 class="text-2xl font-bold mb-4">Social Media Companion</h2>
+                        <p class="text-gray-600 mb-8">AI-powered insights for your social media feeds</p>
+                        <div class="bg-yellow-100 border border-yellow-300 rounded-xl p-4 inline-block">
+                            <span class="text-yellow-800 font-medium">Coming Soon</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="advanced-ai-tab" class="tab-content hidden p-4 lg:p-6">
+                    <div class="max-w-2xl mx-auto text-center py-20">
+                        <div class="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                            <i class="fas fa-brain text-4xl text-gray-400"></i>
+                        </div>
+                        <h2 class="text-2xl font-bold mb-4">Advanced AI Detection</h2>
+                        <p class="text-gray-600 mb-8">Deepfake detection and bias analysis tools</p>
+                        <div class="bg-blue-100 border border-blue-300 rounded-xl p-4 inline-block">
+                            <span class="text-blue-800 font-medium">Beta Feature</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="profile-tab" class="tab-content hidden p-4 lg:p-6">
+                    <div class="max-w-2xl mx-auto text-center py-20">
+                        <div class="w-24 h-24 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center mx-auto mb-6">
+                            <span class="text-white text-2xl font-bold" data-mock="true">JD</span>
+                        </div>
+                        <h2 class="text-2xl font-bold mb-4" data-bind="user.name">John Doe</h2>
+                        <p class="text-gray-600 mb-8">Profile and settings management</p>
+                        <div class="bg-gray-100 border border-gray-300 rounded-xl p-4 inline-block">
+                            <span class="text-gray-800 font-medium">Profile Settings</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Bottom Navigation -->
+        <div class="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t shadow-lg">
+            <div class="grid grid-cols-5 gap-1 p-2">
+                <button onclick="showTab('feed')" class="nav-item-mobile active flex flex-col items-center p-2 rounded-lg">
+                    <i class="fas fa-home text-lg"></i>
+                    <span class="text-xs mt-1">Feed</span>
+                </button>
+                <button onclick="showTab('link-checker')" class="nav-item-mobile flex flex-col items-center p-2 rounded-lg">
+                    <i class="fas fa-search text-lg"></i>
+                    <span class="text-xs mt-1">Check</span>
+                </button>
+                <button onclick="showTab('pause-nudges')" class="nav-item-mobile flex flex-col items-center p-2 rounded-lg">
+                    <i class="fas fa-pause-circle text-lg"></i>
+                    <span class="text-xs mt-1">Pause</span>
+                </button>
+                <button onclick="showTab('learn')" class="nav-item-mobile flex flex-col items-center p-2 rounded-lg">
+                    <i class="fas fa-graduation-cap text-lg"></i>
+                    <span class="text-xs mt-1">Learn</span>
+                </button>
+                <button onclick="showTab('profile')" class="nav-item-mobile flex flex-col items-center p-2 rounded-lg">
+                    <i class="fas fa-user text-lg"></i>
+                    <span class="text-xs mt-1">Profile</span>
+                </button>
+            </div>
+        </div>
+    </div>
+    <!-- @END_COMPONENT: MainApp -->
+
+    <!-- @COMPONENT: FloatingActionButton [quick link checker access] -->
+    <button id="fab" onclick="openQuickCheck()" class="hidden fixed bottom-20 lg:bottom-6 right-6 w-14 h-14 bg-primary rounded-full shadow-lg flex items-center justify-center text-white hover:bg-blue-600 transition-all duration-300 transform hover:scale-110 z-40">
+        <i class="fas fa-plus text-xl"></i>
+    </button>
+    <!-- @END_COMPONENT: FloatingActionButton -->
+
+    <!-- @COMPONENT: QuickCheckModal [overlay for rapid link verification] -->
+    <div id="quick-check-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-xl font-bold">Quick Link Check</h3>
+                <button onclick="closeQuickCheck()" class="p-2 hover:bg-gray-100 rounded-lg">
+                    <i class="fas fa-times text-gray-500"></i>
+                </button>
+            </div>
+            <div class="mb-4">
+                <input type="url" placeholder="Paste link here..." class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent" />
+            </div>
+            <button onclick="quickCheckLink()" class="w-full bg-primary text-white py-3 rounded-xl font-medium hover:bg-blue-600 transition-colors duration-200">
+                <i class="fas fa-search mr-2"></i>Check Now
+            </button>
+        </div>
+    </div>
+    <!-- @END_COMPONENT: QuickCheckModal -->
+
+    <script>
+        // Initialize app
+        (function() {
+            // Show splash screen first
+            setTimeout(() => {
+                document.getElementById('splash-screen').style.opacity = '0';
+                setTimeout(() => {
+                    document.getElementById('splash-screen').style.display = 'none';
+                    document.getElementById('landing-page').classList.remove('hidden');
+                }, 1000);
+            }, 2000);
+        })();
+
+        // Navigation functions
+        function showAuthSelection() {
+            document.getElementById('landing-page').style.display = 'none';
+            document.getElementById('auth-selection').classList.remove('hidden');
+        }
+
+        function showMainApp() {
+            document.getElementById('auth-selection').style.display = 'none';
+            document.getElementById('main-app').classList.remove('hidden');
+            document.getElementById('fab').classList.remove('hidden');
+        }
+
+        function showTab(tabName) {
+            // Hide all tabs
+            const tabs = document.querySelectorAll('.tab-content');
+            tabs.forEach(tab => tab.classList.add('hidden'));
+            
+            // Show selected tab
+            document.getElementById(tabName + '-tab').classList.remove('hidden');
+            
+            // Update active states
+            const navItems = document.querySelectorAll('.nav-item, .nav-item-mobile');
+            navItems.forEach(item => item.classList.remove('active'));
+            event.target.closest('.nav-item, .nav-item-mobile').classList.add('active');
+        }
+
+        function toggleMobileSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('hidden');
+        }
+
+        function openQuickCheck() {
+            document.getElementById('quick-check-modal').classList.remove('hidden');
+        }
+
+        function closeQuickCheck() {
+            document.getElementById('quick-check-modal').classList.add('hidden');
+        }
+
+        // Mock functions for demonstration
+        function checkLink() {
+            // TODO: Implement actual link checking with fact-check APIs
+            document.getElementById('check-results').classList.remove('hidden');
+            document.getElementById('check-results').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function quickCheckLink() {
+            // TODO: Implement quick check functionality
+            closeQuickCheck();
+            showTab('link-checker');
+            checkLink();
+        }
+
+        // Add active state styles
+        const style = document.createElement('style');
+        style.textContent = `
+            .nav-item.active {
+                background-color: #EBF4FF;
+                color: #3B82F6;
+                font-weight: 600;
+            }
+            .nav-item-mobile.active {
+                background-color: #EBF4FF;
+                color: #3B82F6;
+            }
+            .nav-item-mobile:not(.active) {
+                color: #6B7280;
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>

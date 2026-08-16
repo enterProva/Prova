@@ -5,14 +5,12 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { User as UserIcon, LogOut } from "lucide-react";
 
 export default function ProfileTab() {
-  const { user, isAuthenticated, isGuest } = useAuth();
+  const { user, isAuthenticated, isGuest, hasFullAccess, setIsGuest, setGuestProfile } = useAuth();
 
-  const handleLogout = () => {
-    window.location.href = "/api/logout";
-  };
-
-  const handleLogin = () => {
-    window.location.href = "/api/login";
+  const handleEndSession = () => {
+    setGuestProfile(null);
+    setIsGuest(false);
+    if (typeof window !== "undefined") window.location.reload();
   };
 
   const getInitials = (name?: string | null) => {
@@ -24,8 +22,8 @@ export default function ProfileTab() {
       .toUpperCase();
   };
 
-  const displayName = user?.guest ? "Guest User" : user?.name || "User";
-  const avatarUrl = user?.guest ? undefined : user?.avatarUrl;
+  const displayName = user?.guest && !hasFullAccess ? "Guest User" : user?.name || "User";
+  const avatarUrl = user?.guest && !hasFullAccess ? undefined : user?.avatarUrl;
 
   return (
     <div className="p-4 lg:p-6" data-testid="tab-profile">
@@ -37,7 +35,7 @@ export default function ProfileTab() {
                 {avatarUrl ? (
                   <AvatarImage src={avatarUrl} />
                 ) : (
-                  <AvatarFallback className="text-2xl font-bold bg-gradient-to-r from-blue-500 to-purple-500 text-white">
+                  <AvatarFallback className="text-2xl font-bold bg-gradient-to-r from-[#25344f] to-[#617891] text-white">
                     {getInitials(displayName)}
                   </AvatarFallback>
                 )}
@@ -47,13 +45,13 @@ export default function ProfileTab() {
                 {displayName}
               </h2>
 
-              {user.email && !user.guest && (
+              {user.email && hasFullAccess && (
                 <p className="text-gray-600 mb-6" data-testid="text-user-email">
                   {user.email}
                 </p>
               )}
 
-              {!user.guest && (
+              {hasFullAccess && (
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
                   <div className="text-center">
                     <div className="text-2xl font-bold text-primary" data-testid="stat-user-links-checked">
@@ -82,24 +80,24 @@ export default function ProfileTab() {
                 </div>
               )}
 
-              {isGuest ? (
+              {isGuest && !hasFullAccess ? (
                 <div className="space-y-4">
-                  <Button onClick={handleLogin} className="w-full" data-testid="button-login-profile">
-                    Login / Sign Up
+                  <Button onClick={handleEndSession} className="w-full" data-testid="button-end-session-profile">
+                    End Session
                   </Button>
                   <p className="text-sm text-gray-500">
-                    Continue using PPP with full access to fact-checking and learning features.
+                    Guest Preview — limited features. Use UNESCO Judge Demo for full-access evaluation.
                   </p>
                 </div>
               ) : (
                 <Button
-                  onClick={handleLogout}
+                  onClick={handleEndSession}
                   variant="outline"
-                  className="text-red-600 hover:text-red-700 hover:border-red-300"
-                  data-testid="button-logout-profile"
+                  className="text-primary"
+                  data-testid="button-end-session-profile"
                 >
                   <LogOut className="w-4 h-4 mr-2" />
-                  Logout
+                  End Session
                 </Button>
               )}
             </CardContent>
@@ -107,17 +105,17 @@ export default function ProfileTab() {
         ) : (
           <Card>
             <CardContent className="p-8 text-center">
-              <div className="w-24 h-24 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center mx-auto mb-6">
+              <div className="w-24 h-24 bg-gradient-to-r from-[#25344f] to-[#617891] rounded-full flex items-center justify-center mx-auto mb-6">
                 <UserIcon className="w-12 h-12 text-white" data-testid="icon-guest-user" />
               </div>
               <h2 className="text-2xl font-bold mb-4" data-testid="text-guest-title">
-                Guest User
+                Guest Preview
               </h2>
               <p className="text-gray-600 mb-8" data-testid="text-guest-description">
-                Sign up to save your progress, access personalized features, and join the community.
+                Use the Guest Preview or UNESCO Judge Demo from the Get Started screen to explore the app.
               </p>
-              <Button onClick={handleLogin} className="w-full" data-testid="button-login-profile">
-                Login / Sign Up
+              <Button onClick={() => (window.location.href = "/auth")} className="w-full" data-testid="button-get-started-profile">
+                Get Started
               </Button>
             </CardContent>
           </Card>

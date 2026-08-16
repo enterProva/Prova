@@ -1,4 +1,5 @@
 import { Switch, Route, Redirect } from "wouter";
+import { useEffect, useState } from "react";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { queryClient } from "./lib/queryClient";
 import { useAuth } from "@/hooks/useAuth";
@@ -38,9 +39,16 @@ function Router() {
 }
 
 export default function App() {
+  const [showIntroSplash, setShowIntroSplash] = useState(true);
+
+  useEffect(() => {
+    const t = setTimeout(() => setShowIntroSplash(false), 3000);
+    return () => clearTimeout(t);
+  }, []);
+
   return (
     <QueryClientProvider client={queryClient}>
-      <Router />
+      {showIntroSplash ? <SplashScreen /> : <Router />}
     </QueryClientProvider>
   );
 }

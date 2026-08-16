@@ -1,58 +1,61 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 :root {
-  --background: hsl(0, 0%, 100%);
-  --foreground: hsl(210, 25%, 7.8431%);
-  --card: hsl(0, 0%, 100%);
-  --card-foreground: hsl(210, 25%, 7.8431%);
-  --popover: hsl(0, 0%, 100%);
-  --popover-foreground: hsl(210, 25%, 7.8431%);
-  --primary: hsl(214, 100%, 59%);
-  --primary-foreground: hsl(0, 0%, 100%);
-  --secondary: hsl(210, 25%, 7.8431%);
-  --secondary-foreground: hsl(0, 0%, 100%);
-  --muted: hsl(240, 1.9608%, 90%);
-  --muted-foreground: hsl(210, 25%, 7.8431%);
-  --accent: hsl(214, 100%, 96%);
-  --accent-foreground: hsl(214, 100%, 59%);
-  --destructive: hsl(1, 91%, 55%);
-  --destructive-foreground: hsl(0, 0%, 100%);
-  --border: hsl(201.4286, 30.4348%, 90.9804%);
-  --input: hsl(200, 23.0769%, 97.4510%);
-  --ring: hsl(214, 100%, 59%);
-  --chart-1: hsl(214, 100%, 59%);
-  --chart-2: hsl(159.7826, 100%, 36.0784%);
-  --chart-3: hsl(42.0290, 92.8251%, 56.2745%);
-  --chart-4: hsl(147.1429, 78.5047%, 41.9608%);
-  --chart-5: hsl(341.4894, 75.2000%, 50.9804%);
-  --sidebar: hsl(0, 0%, 100%);
-  --sidebar-foreground: hsl(210, 25%, 7.8431%);
-  --sidebar-primary: hsl(214, 100%, 59%);
-  --sidebar-primary-foreground: hsl(0, 0%, 100%);
-  --sidebar-accent: hsl(214, 100%, 96%);
-  --sidebar-accent-foreground: hsl(214, 100%, 59%);
-  --sidebar-border: hsl(205.0000, 25.0000%, 90.5882%);
-  --sidebar-ring: hsl(214, 100%, 59%);
+  --space-cadet: #25344f;
+  --slate-grey: #617891;
+  --white: #ffffff;
+  --background: #f5f7fb;
+  --foreground: #25344f;
+  --card: rgba(255, 255, 255, 0.82);
+  --card-foreground: #25344f;
+  --popover: #ffffff;
+  --popover-foreground: #25344f;
+  --primary: #25344f;
+  --primary-foreground: #ffffff;
+  --secondary: #eef4ff;
+  --secondary-foreground: #25344f;
+  --muted: #f2f6fb;
+  --muted-foreground: #617891;
+  --accent: #edf3ff;
+  --accent-foreground: #25344f;
+  --destructive: #d95c5c;
+  --destructive-foreground: #ffffff;
+  --border: rgba(133, 152, 180, 0.2);
+  --input: #f4f7fa;
+  --ring: #25344f;
+  --chart-1: #25344f;
+  --chart-2: #617891;
+  --chart-3: #93a5ba;
+  --chart-4: #d7e1ec;
+  --chart-5: #e9eef4;
+  --sidebar: #ffffff;
+  --sidebar-foreground: #25344f;
+  --sidebar-primary: #25344f;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #edf3f9;
+  --sidebar-accent-foreground: #25344f;
+  --sidebar-border: rgba(133, 152, 180, 0.18);
+  --sidebar-ring: #25344f;
   --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
   --font-serif: 'Georgia', 'Times New Roman', serif;
   --font-mono: 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', 'Liberation Mono', 'Courier New', monospace;
-  --radius: 1.3rem;
-  --success: hsl(160, 84%, 39%);
-  --success-foreground: hsl(0, 0%, 100%);
-  --warning: hsl(38, 92%, 50%);
-  --warning-foreground: hsl(0, 0%, 100%);
-  --gray-50: hsl(0, 0%, 98%);
-  --shadow-2xs: 0px 2px 0px 0px hsl(214, 100%, 59%, 0.00);
-  --shadow-xs: 0px 2px 0px 0px hsl(214, 100%, 59%, 0.00);
-  --shadow-sm: 0px 2px 0px 0px hsl(214, 100%, 59%, 0.00), 0px 1px 2px -1px hsl(214, 100%, 59%, 0.00);
-  --shadow: 0px 2px 0px 0px hsl(214, 100%, 59%, 0.00), 0px 1px 2px -1px hsl(214, 100%, 59%, 0.00);
-  --shadow-md: 0px 2px 0px 0px hsl(214, 100%, 59%, 0.00), 0px 2px 4px -1px hsl(214, 100%, 59%, 0.00);
-  --shadow-lg: 0px 2px 0px 0px hsl(214, 100%, 59%, 0.00), 0px 4px 6px -1px hsl(214, 100%, 59%, 0.00);
-  --shadow-xl: 0px 2px 0px 0px hsl(214, 100%, 59%, 0.00), 0px 8px 10px -1px hsl(214, 100%, 59%, 0.00);
-  --shadow-2xl: 0px 2px 0px 0px hsl(214, 100%, 59%, 0.00);
+  --radius: 1.5rem;
+  --success: #2f9d6d;
+  --success-foreground: #ffffff;
+  --warning: #d9843d;
+  --warning-foreground: #ffffff;
+  --gray-50: #f8fafc;
+  --shadow-2xs: 0px 2px 0px 0px rgba(37, 52, 79, 0.00);
+  --shadow-xs: 0px 2px 0px 0px rgba(37, 52, 79, 0.00);
+  --shadow-sm: 0px 8px 20px rgba(37, 52, 79, 0.06), 0px 2px 6px rgba(37, 52, 79, 0.04);
+  --shadow: 0px 12px 30px rgba(37, 52, 79, 0.08), 0px 3px 10px rgba(37, 52, 79, 0.05);
+  --shadow-md: 0px 16px 36px rgba(37, 52, 79, 0.10), 0px 4px 12px rgba(37, 52, 79, 0.06);
+  --shadow-lg: 0px 26px 50px rgba(37, 52, 79, 0.12), 0px 8px 24px rgba(37, 52, 79, 0.08);
+  --shadow-xl: 0px 30px 60px rgba(37, 52, 79, 0.14), 0px 10px 28px rgba(37, 52, 79, 0.08);
+  --shadow-2xl: 0px 26px 80px rgba(37, 52, 79, 0.16);
   --tracking-normal: 0em;
   --spacing: 0.25rem;
 }
@@ -117,27 +120,37 @@
   body {
     @apply font-sans antialiased bg-background text-foreground;
     font-family: var(--font-sans);
+    background:
+      radial-gradient(circle at top left, rgba(135, 168, 214, 0.22), transparent 28%),
+      radial-gradient(circle at bottom right, rgba(173, 216, 230, 0.18), transparent 25%),
+      var(--background);
   }
 
-  /* Custom utility classes for PPP */
+  .social-surface {
+    background: rgba(255, 255, 255, 0.72);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+
+  /* Prova brand utilities */
   .gradient-primary {
-    @apply bg-gradient-to-r from-primary to-blue-600;
+    @apply bg-gradient-to-r from-[#25344f] to-[#617891];
   }
 
   .gradient-success {
-    @apply bg-gradient-to-r from-success to-green-600;
+    @apply bg-gradient-to-r from-[#2f9d6d] to-[#7bb99d];
   }
 
   .gradient-warning {
-    @apply bg-gradient-to-r from-warning to-yellow-600;
+    @apply bg-gradient-to-r from-[#d9843d] to-[#efb36c];
   }
 
   .gradient-purple {
-    @apply bg-gradient-to-r from-blue-500 to-purple-600;
+    @apply bg-gradient-to-r from-[#25344f] to-[#617891];
   }
 
   .gradient-green-blue {
-    @apply bg-gradient-to-r from-green-500 to-blue-600;
+    @apply bg-gradient-to-r from-[#617891] to-[#25344f];
   }
 
   /* Traffic light verdict colors */

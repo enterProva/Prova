@@ -1,7 +1,7 @@
+import "dotenv/config";
 import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
-import "dotenv/config";   // ✅ loads your .env automatically
 
 const app = express();
 app.use(express.json());

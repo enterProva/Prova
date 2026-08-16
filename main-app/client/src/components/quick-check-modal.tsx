@@ -71,20 +71,21 @@ export default function QuickCheckModal({ isOpen, onClose, onCheckComplete }: Qu
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-md" data-testid="modal-quick-check">
-        <DialogHeader>
-          <div className="flex items-center justify-between">
-            <DialogTitle data-testid="text-quick-check-title">
-              Quick Link Check
-            </DialogTitle>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={onClose}
-              data-testid="button-close-modal"
-            >
-              <X className="w-4 h-4" />
-            </Button>
-          </div>
+        <DialogHeader className="relative pr-10">
+          <DialogTitle data-testid="text-quick-check-title">
+            Quick Link Check
+          </DialogTitle>
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            onClick={onClose}
+            className="absolute right-0 top-0 h-8 w-8 p-0"
+            data-testid="button-close-modal"
+            aria-label="Cancel quick link check"
+          >
+            <X className="w-4 h-4" />
+          </Button>
         </DialogHeader>
         
         <div className="space-y-4">

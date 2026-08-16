@@ -4,14 +4,14 @@ import Sidebar from "@/components/sidebar";
 import FloatingActionButton from "@/components/floating-action-button";
 import QuickCheckModal from "@/components/quick-check-modal";
 import FeedTab from "@/components/tabs/feed-tab";
-import LinkCheckerTab from "@/components/tabs/link-checker-tab";
+import LinkCheckerTab, { type LinkCheckResult } from "@/components/tabs/link-checker-tab";
 import PauseNudgesTab from "@/components/tabs/pause-nudges-tab";
 import LearnTab from "@/components/tabs/learn-tab";
 import CommunityTab from "@/components/tabs/community-tab";
 import SocialCompanionTab from "@/components/tabs/social-companion-tab";
 import AdvancedAITab from "@/components/tabs/advanced-ai-tab";
 import ProfileTab from "@/components/tabs/profile-tab";
-import { Menu, Shield } from "lucide-react";
+import { Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export type TabType = 'feed' | 'link-checker' | 'pause-nudges' | 'learn' | 'community' | 'social-companion' | 'advanced-ai' | 'profile';
@@ -19,7 +19,9 @@ export type TabType = 'feed' | 'link-checker' | 'pause-nudges' | 'learn' | 'comm
 export default function Home() {
   const [activeTab, setActiveTab] = useState<TabType>('feed');
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(true);
   const [quickCheckOpen, setQuickCheckOpen] = useState(false);
+  const [quickCheckResult, setQuickCheckResult] = useState<LinkCheckResult | null>(null);
   const isMobile = useIsMobile();
 
   const toggleSidebar = () => {
@@ -31,7 +33,7 @@ export default function Home() {
       case 'feed':
         return <FeedTab />;
       case 'link-checker':
-        return <LinkCheckerTab />;
+        return <LinkCheckerTab initialResult={quickCheckResult} />;
       case 'pause-nudges':
         return <PauseNudgesTab />;
       case 'learn':
@@ -50,15 +52,15 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50" data-testid="page-home">
+    <div className="min-h-screen bg-transparent" data-testid="page-home">
       {/* Mobile Header */}
       {isMobile && (
         <div className="bg-white shadow-sm border-b px-4 py-3 flex items-center justify-between">
           <div className="flex items-center space-x-3">
-            <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-              <Shield className="w-5 h-5 text-white" data-testid="icon-shield-mobile" />
+            <div className="w-8 h-8 bg-transparent rounded-lg flex items-center justify-center">
+              <img src="/mobile%20app-logo.png" alt="Prova" className="w-6 h-6 object-contain" data-testid="img-logo-mobile" />
             </div>
-            <h1 className="font-bold text-lg" data-testid="text-app-title-mobile">PPP</h1>
+            <h1 className="font-bold text-lg tracking-[-0.05em]" data-testid="text-app-title-mobile">PROVA</h1>
           </div>
           <Button
             variant="ghost"
@@ -71,13 +73,16 @@ export default function Home() {
         </div>
       )}
 
-      <div className="flex">
+      <div className="flex bg-[radial-gradient(circle_at_top,_rgba(255,255,255,0.7),_rgba(245,247,251,0.8))]">
         {/* Sidebar */}
         <Sidebar 
           activeTab={activeTab}
           setActiveTab={setActiveTab}
           isOpen={sidebarOpen}
+          isCollapsed={sidebarCollapsed}
           onClose={() => setSidebarOpen(false)}
+          onMouseEnter={() => !isMobile && setSidebarCollapsed(false)}
+          onMouseLeave={() => !isMobile && setSidebarCollapsed(true)}
         />
 
         {/* Mobile overlay */}
@@ -131,7 +136,8 @@ export default function Home() {
       <QuickCheckModal 
         isOpen={quickCheckOpen}
         onClose={() => setQuickCheckOpen(false)}
-        onCheckComplete={() => {
+        onCheckComplete={(result) => {
+          setQuickCheckResult(result);
           setQuickCheckOpen(false);
           setActiveTab('link-checker');
         }}

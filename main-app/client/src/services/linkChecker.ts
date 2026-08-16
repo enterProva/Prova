@@ -16,55 +16,25 @@ export async function fetchUserLinkChecks(limit = 10) {
 }
 
 export interface LinkCheckResult {
-  id: string;
+  id?: string;
   url: string;
   title?: string;
-  domain?: string;
   verdict: "verified" | "misleading" | "false" | "pending";
   credibilityScore?: number;
   biasRating?: "low" | "medium" | "high";
   factCheckScore?: number;
   sourcesCount?: number;
-  publicationDate?: string;
-  sourceUrls?: string[];
+  publicationDate?: string | null;
   factCheckSources?: string[];
   sources?: string[];
   summary?: string;
+  reason?: string;
   reasoning?: string;
   modelUsed?: string;
-  searchResults?: unknown[];
-  reason?: string;
-  checkedAt: string;
-}
-
-function mapLinkCheckResult(data: any, fallbackUrl?: string): LinkCheckResult {
-  const sourceUrls = Array.isArray(data.sourceUrls)
-    ? data.sourceUrls
-    : Array.isArray(data.sources)
-      ? data.sources
-      : data.factCheckSources ?? [];
-
-  return {
-    id: data.id,
-    url: data.url ?? fallbackUrl ?? "",
-    title: data.title ?? data.summary ?? "",
-    domain: data.domain ?? undefined,
-    verdict: data.verdict ?? "pending",
-    credibilityScore: typeof data.credibilityScore === "number" ? data.credibilityScore : undefined,
-    biasRating: data.biasRating ?? undefined,
-    factCheckScore: typeof data.factCheckScore === "number" ? data.factCheckScore : undefined,
-    sourcesCount: typeof data.sourcesCount === "number" ? data.sourcesCount : sourceUrls.length,
-    publicationDate: data.publicationDate ?? undefined,
-    sourceUrls,
-    factCheckSources: Array.isArray(data.factCheckSources) ? data.factCheckSources : sourceUrls,
-    sources: Array.isArray(data.sources) ? data.sources : sourceUrls,
-    summary: data.summary ?? "",
-    reasoning: data.reasoning ?? undefined,
-    modelUsed: data.modelUsed ?? undefined,
-    searchResults: Array.isArray(data.searchResults) ? data.searchResults : undefined,
-    reason: data.reason ?? "",
-    checkedAt: data.checkedAt ?? new Date().toISOString(),
-  };
+  searchResults?: any[];
+  domain?: string;
+  content?: string;
+  checkedAt?: string;
 }
 
 export class LinkCheckerService {
@@ -72,20 +42,74 @@ export class LinkCheckerService {
     const response = await apiRequest("POST", "/api/link-checks", { url });
     const data = await response.json();
 
-    return mapLinkCheckResult(data, url);
+    return {
+      id: data.id,
+      url: data.url ?? url,
+      title: data.title ?? data.summary ?? "",
+      verdict: data.verdict ?? "pending",
+      credibilityScore: typeof data.credibilityScore === "number" ? data.credibilityScore : undefined,
+      biasRating: data.biasRating ?? undefined,
+      factCheckScore: typeof data.factCheckScore === "number" ? data.factCheckScore : undefined,
+      sourcesCount: typeof data.sourcesCount === "number" ? data.sourcesCount : undefined,
+      publicationDate: data.publicationDate ?? undefined,
+      factCheckSources: Array.isArray(data.factCheckSources) ? data.factCheckSources : undefined,
+
+      // Added fields
+      sources: Array.isArray(data.sources) ? data.sources : data.factCheckSources ?? [],
+      summary: data.summary ?? "",
+      reason: data.reason ?? "",
+
+      checkedAt: data.checkedAt ?? new Date().toISOString(),
+    };
   }
 
   static async getRecentChecks(limit = 10): Promise<LinkCheckResult[]> {
     const response = await apiRequest("GET", `/api/link-checks/recent?limit=${limit}`);
     const arr = await response.json();
 
-    return arr.map((item: any) => mapLinkCheckResult(item));
+    return arr.map((item: any) => ({
+      id: item.id,
+      url: item.url,
+      title: item.title ?? "",
+      verdict: item.verdict ?? "pending",
+      credibilityScore: item.credibilityScore ?? undefined,
+      biasRating: item.biasRating ?? undefined,
+      factCheckScore: item.factCheckScore ?? undefined,
+      sourcesCount: item.sourcesCount ?? undefined,
+      publicationDate: item.publicationDate ?? undefined,
+      factCheckSources: item.factCheckSources ?? undefined,
+
+      // Added fields
+      sources: Array.isArray(item.sources) ? item.sources : item.factCheckSources ?? [],
+      summary: item.summary ?? "",
+      reason: item.reason ?? "",
+
+      checkedAt: item.checkedAt ?? new Date().toISOString(),
+    }));
   }
 
   static async getUserChecks(limit = 10): Promise<LinkCheckResult[]> {
     const response = await apiRequest("GET", `/api/link-checks/user?limit=${limit}`);
     const arr = await response.json();
 
-    return arr.map((item: any) => mapLinkCheckResult(item));
+    return arr.map((item: any) => ({
+      id: item.id,
+      url: item.url,
+      title: item.title ?? "",
+      verdict: item.verdict ?? "pending",
+      credibilityScore: item.credibilityScore ?? undefined,
+      biasRating: item.biasRating ?? undefined,
+      factCheckScore: item.factCheckScore ?? undefined,
+      sourcesCount: item.sourcesCount ?? undefined,
+      publicationDate: item.publicationDate ?? undefined,
+      factCheckSources: item.factCheckSources ?? undefined,
+
+      // Added fields
+      sources: Array.isArray(item.sources) ? item.sources : item.factCheckSources ?? [],
+      summary: item.summary ?? "",
+      reason: item.reason ?? "",
+
+      checkedAt: item.checkedAt ?? new Date().toISOString(),
+    }));
   }
 }

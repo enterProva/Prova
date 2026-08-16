@@ -1,9 +1,8 @@
-import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState, useEffect } from "react";
 
 const GUEST_KEY = "isGuest";
+const GUEST_PROFILE_KEY = "guestProfile";
 
-// Full user type covering Google users and guest users
 export type User = {
   id: string;
   email?: string | null;
@@ -12,88 +11,112 @@ export type User = {
   name?: string;
   guest?: boolean;
   avatarUrl?: string | null;
-
-  // Optional stats
   linksChecked?: number;
   streakDays?: number;
   trustScore?: number;
   completedLessons?: number;
+  // optional demo flags
+  role?: string;
+  fullAccess?: boolean;
 };
 
-export function useAuth() {
-  const queryClient = useQueryClient();
-  const [isGuest, setIsGuestState] = useState<boolean>(false);
-  const [guestRestored, setGuestRestored] = useState(false);
+type Subscriber = () => void;
 
-  // Restore guest flag from sessionStorage
+// Simple in-module auth store so multiple hook instances share state
+const authStore: {
+  isGuest: boolean;
+  guestProfile: Partial<User> | null;
+  subscribers: Set<Subscriber>;
+} = {
+  isGuest: false,
+  guestProfile: null,
+  subscribers: new Set(),
+};
+
+// Initialize store from sessionStorage (safe-guarded)
+try {
+  const rawGuest = sessionStorage.getItem(GUEST_KEY);
+  authStore.isGuest = rawGuest === "true";
+  const rawProfile = sessionStorage.getItem(GUEST_PROFILE_KEY);
+  if (rawProfile) authStore.guestProfile = JSON.parse(rawProfile);
+} catch (e) {
+  // ignore (e.g., SSR or restricted storage)
+}
+
+function notifySubscribers() {
+  authStore.subscribers.forEach((cb) => cb());
+}
+
+function setIsGuestStore(value: boolean) {
+  console.log("[useAuth-store] setIsGuest called with:", value);
+  authStore.isGuest = value;
+  try {
+    sessionStorage.setItem(GUEST_KEY, value ? "true" : "false");
+  } catch (e) {
+    // ignore storage failures
+  }
+  notifySubscribers();
+}
+
+function setGuestProfileStore(profile: Partial<User> | null) {
+  authStore.guestProfile = profile;
+  try {
+    if (profile) sessionStorage.setItem(GUEST_PROFILE_KEY, JSON.stringify(profile));
+    else sessionStorage.removeItem(GUEST_PROFILE_KEY);
+  } catch (e) {
+    // ignore
+  }
+  notifySubscribers();
+}
+
+export function useAuth() {
+  const [isGuest, setIsGuestState] = useState<boolean>(authStore.isGuest);
+  const [guestProfile, setGuestProfileState] = useState<Partial<User> | null>(authStore.guestProfile);
+
+  // Subscribe to store updates
   useEffect(() => {
-    const storedGuest = sessionStorage.getItem(GUEST_KEY) === "true";
-    if (storedGuest) {
-      console.log("[useAuth] guest flag found in sessionStorage:", storedGuest);
-      setGuestRestored(true);
-      setIsGuestState(true); // activate guest mode immediately on restore
-    }
+    const sub = () => {
+      setIsGuestState(authStore.isGuest);
+      setGuestProfileState(authStore.guestProfile);
+    };
+    authStore.subscribers.add(sub);
+    return () => {
+      authStore.subscribers.delete(sub);
+    };
   }, []);
 
-  // Fetch Google-authenticated user only if NOT in guest mode
-  const { data: fetchedUser, isLoading, isFetching, error, refetch } = useQuery<User, Error>({
-    queryKey: ["/api/auth/user"],
-    queryFn: async () => {
-      const res = await fetch("/api/auth/user", { credentials: "include" });
-      if (!res.ok) throw new Error("Not authenticated");
-      return res.json();
-    },
-    retry: false,
-    refetchOnWindowFocus: false,
-    refetchInterval: false,
-    enabled: !isGuest, // <-- do NOT fetch if guest mode is active
-  });
+  const isLoading = false;
+  const isFetching = false;
+  const error = null as Error | null;
 
-  // Current user: guest object overrides Google user
   const user: User | undefined = isGuest
     ? {
         id: "guestuser",
-        name: "Guest User",
-        email: null,
+        name: guestProfile?.name ?? "Guest User",
+        email: guestProfile?.email ?? null,
         guest: true,
-        avatarUrl: null,
-        linksChecked: 0,
-        streakDays: 0,
-        trustScore: 50,
-        completedLessons: 0,
+        avatarUrl: guestProfile?.avatarUrl ?? null,
+        linksChecked: guestProfile?.linksChecked ?? 0,
+        streakDays: guestProfile?.streakDays ?? 0,
+        trustScore: guestProfile?.trustScore ?? 50,
+        completedLessons: guestProfile?.completedLessons ?? 0,
+        role: (guestProfile as any)?.role,
+        fullAccess: (guestProfile as any)?.fullAccess,
       }
-    : fetchedUser;
+    : undefined;
 
   const isAuthenticated = !!user;
 
-  // Persist guest mode in sessionStorage
-  useEffect(() => {
-    if (isGuest) {
-      sessionStorage.setItem(GUEST_KEY, "true");
-    } else if (!guestRestored) {
-      sessionStorage.removeItem(GUEST_KEY);
-    }
-  }, [isGuest, guestRestored]);
-
-  // Wrapped setter for guest mode
   const setIsGuest = (value: boolean) => {
-    console.log("[useAuth] setIsGuest called with:", value);
-
-    if (value) {
-      // Cancel any in-flight Google user fetch and clear cached data
-      queryClient.cancelQueries({ queryKey: ["/api/auth/user"] });
-      queryClient.setQueryData<User | undefined>(["/api/auth/user"], undefined);
-      setIsGuestState(true);
-      sessionStorage.setItem(GUEST_KEY, "true");
-    } else {
-      setIsGuestState(false);
-      sessionStorage.setItem(GUEST_KEY, "false");
-      queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
-      refetch(); // fetch Google user after disabling guest
-    }
+    setIsGuestStore(value);
   };
 
-  // Debug logging
+  const setGuestProfile = (profile: Partial<User> | null) => {
+    setGuestProfileStore(profile);
+  };
+
+  const hasFullAccess = !isGuest || (guestProfile && (guestProfile as any).role === "judge") || (guestProfile && (guestProfile as any).fullAccess === true);
+
   useEffect(() => {
     console.log("[useAuth] state update:", {
       user,
@@ -102,9 +125,9 @@ export function useAuth() {
       error: error ? error.message : null,
       isGuest,
       isAuthenticated,
-      guestRestored,
+      guestProfile,
     });
-  }, [user, isLoading, isFetching, error, isGuest, isAuthenticated, guestRestored]);
+  }, [user, isLoading, isFetching, error, isGuest, isAuthenticated, guestProfile]);
 
-  return { user, isLoading, isFetching, isAuthenticated, isGuest, setIsGuest, refetch };
+  return { user, isLoading, isFetching, isAuthenticated, isGuest, setIsGuest, setGuestProfile, hasFullAccess };
 }

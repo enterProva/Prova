@@ -15,12 +15,12 @@ export interface LinkCheckResult {
   id?: string;
   url: string;
   verdict: "verified" | "misleading" | "false" | "pending";
-  credibilityScore: number;
-  biasRating: "low" | "medium" | "high";
-  factCheckScore: number;
-  sourcesCount: number;
-  sourceUrls?: string[];
-  factCheckSources?: string[];
+  finalVerdict?: "verified" | "misleading" | "false" | "pending";
+  userDecision?: "real" | "not-real" | "unsure";
+  credibilityScore?: number;
+  biasRating?: "low" | "medium" | "high";
+  factCheckScore?: number;
+  sourcesCount?: number;
   sources?: string[];
   summary?: string;
   modelUsed?: string;
@@ -33,10 +33,16 @@ export interface LinkCheckResult {
   content?: string;
 }
 
-export default function LinkCheckerTab() {
+interface LinkCheckerTabProps {
+  initialResult?: LinkCheckResult | null;
+}
+
+export default function LinkCheckerTab({ initialResult }: LinkCheckerTabProps) {
   const [url, setUrl] = useState("");
   const [lastCheckedUrl, setLastCheckedUrl] = useState("");
   const [showTechnicalDetails, setShowTechnicalDetails] = useState(false);
+  const [showDecisionOptions, setShowDecisionOptions] = useState(false);
+  const [userDecision, setUserDecision] = useState<"real" | "not-real" | "unsure" | null>(null);
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -56,6 +62,7 @@ export default function LinkCheckerTab() {
       });
       setLastCheckedUrl(url);
       setUrl("");
+      setUserDecision(data.userDecision ?? null);
 
       queryClient.setQueryData<LinkCheckResult[]>(
         ["/api/link-checks/user"],
@@ -71,8 +78,42 @@ export default function LinkCheckerTab() {
     },
   });
 
-  const latestCheck = recentChecks?.[0];
-  const shouldShowResult = lastCheckedUrl && latestCheck && latestCheck.url === lastCheckedUrl;
+  const updateDecisionMutation = useMutation({
+    mutationFn: async ({ id, decision }: { id?: string; decision: "real" | "not-real" | "unsure" }) => {
+      if (!id) {
+        throw new Error("Missing link check ID");
+      }
+
+      const response = await apiRequest("PATCH", `/api/link-checks/${id}/decision`, { userDecision: decision });
+      return response.json() as Promise<LinkCheckResult>;
+    },
+    onSuccess: (data) => {
+      queryClient.setQueryData<LinkCheckResult[]>(["/api/link-checks/user"], (oldData = []) => {
+        if (!oldData.length) return [data];
+        return oldData.map((item) => item.id === data.id ? { ...item, ...data, verdict: data.finalVerdict ?? data.verdict } : item);
+      });
+      setUserDecision(data.userDecision ?? null);
+      setShowDecisionOptions(false);
+      toast({
+        title: "Decision saved",
+        description: "Your judgment has been saved and now affects the final result for this link.",
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Decision not saved",
+        description: "We could not save your decision for this check.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const latestCheck = initialResult ?? recentChecks?.[0];
+  const effectiveVerdict = (latestCheck?.finalVerdict ?? latestCheck?.verdict ?? "pending") as LinkCheckResult["finalVerdict"] extends string ? LinkCheckResult["finalVerdict"] : "verified" | "misleading" | "false" | "pending";
+  const effectiveUserDecision = latestCheck?.userDecision ?? userDecision;
+  const shouldShowResult = Boolean(initialResult)
+    ? Boolean(latestCheck)
+    : Boolean(lastCheckedUrl && latestCheck && latestCheck.url === lastCheckedUrl);
 
   const handleCheck = () => {
     if (!url.trim()) {
@@ -107,27 +148,27 @@ export default function LinkCheckerTab() {
 
   const getVerdictText = (verdict: string) => {
     switch (verdict) {
-      case "verified": return "Verified Content";
-      case "misleading": return "Misleading Content";
-      case "false": return "False Content";
-      default: return "Analysis Pending";
+      case "verified": return "Context signal: likely credible";
+      case "misleading": return "Context signal: likely misleading";
+      case "false": return "Context signal: likely unreliable";
+      default: return "Context still being reviewed";
     }
   };
 
   const getVerdictDescription = (verdict: string, summary?: string, credibilityScore?: number, domain?: string) => {
     if (summary && summary.trim()) {
-      return summary;
+      return `${summary} Based on this context, ask: do you think this is real or not?`;
     }
 
     switch (verdict) {
       case "verified": 
-        return `This content from ${domain || 'the source'} appears to be credible based on our analysis. It contains factual information that aligns with reliable sources.`;
+        return `This context from ${domain || 'the source'} looks stronger than average, but the final call is yours. Ask: does this match what you already know, and does it hold up against other reliable sources?`;
       case "misleading": 
-        return `This content from ${domain || 'the source'} contains some misleading elements or lacks proper context. Please verify with additional sources before sharing.`;
+        return `This context from ${domain || 'the source'} raises some caution flags. It may be missing context or framing things too strongly. Use this as a cue to check more sources before you share it.`;
       case "false": 
-        return `Our analysis suggests this content from ${domain || 'the source'} may contain inaccurate information. Please verify with reliable sources before sharing.`;
+        return `This context from ${domain || 'the source'} looks unreliable or weakly supported. Prova is highlighting the risk, but you still decide what you believe and share.`;
       default: 
-        return "We are currently analyzing this content. Please check back soon for results.";
+        return "We’re gathering the available context to help you assess the story. The final decision still rests with you.";
     }
   };
 
@@ -154,6 +195,37 @@ export default function LinkCheckerTab() {
     }
   };
 
+  const buildSourceInsight = (result: LinkCheckResult) => {
+    const score = result.credibilityScore ?? 0;
+    const bias = result.biasRating ?? 'medium';
+
+    if (result.verdict === 'verified') {
+      return {
+        label: 'AI source insight: stronger support',
+        detail: `This looks relatively credible with a ${score}/100 credibility score and ${bias} bias signal. It still helps to check whether the source matches what you already know.`,
+      };
+    }
+
+    if (result.verdict === 'misleading') {
+      return {
+        label: 'AI source insight: check the context',
+        detail: `This appears to be missing context or framing the claim more strongly than the evidence supports, with a ${score}/100 credibility score and ${bias} bias signal.`,
+      };
+    }
+
+    if (result.verdict === 'false') {
+      return {
+        label: 'AI source insight: weak support',
+        detail: `This has weak corroboration and a poor support pattern, with a ${score}/100 credibility score and ${bias} bias signal. Treat it as a caution sign before sharing.`,
+      };
+    }
+
+    return {
+      label: 'AI source insight: still checking',
+      detail: `Prova is still reviewing source quality, bias, and corroboration for this link before making a call.`,
+    };
+  };
+
   const getModelDisplayName = (modelUsed?: string) => {
     if (!modelUsed) return "AI Model";
     
@@ -166,35 +238,23 @@ export default function LinkCheckerTab() {
     }
   };
 
-  const getSourceUrls = (check: LinkCheckResult) => {
-    if (Array.isArray(check.sourceUrls) && check.sourceUrls.length > 0) {
-      return check.sourceUrls;
-    }
-
-    if (Array.isArray(check.sources) && check.sources.length > 0) {
-      return check.sources;
-    }
-
-    return Array.isArray(check.factCheckSources) ? check.factCheckSources : [];
-  };
-
   return (
-    <div className="p-4 sm:p-6 overflow-x-hidden" data-testid="tab-link-checker">
-      <div className="w-full px-4">
+    <div className="p-3 sm:p-6 overflow-x-hidden" data-testid="tab-link-checker">
+      <div className="w-full max-w-6xl mx-auto px-0 sm:px-2">
         {/* Header */}
-        <div className="mb-6">
-          <h2 className="text-2xl font-bold mb-2" data-testid="text-link-checker-title">Link Checker</h2>
-          <p className="text-gray-600" data-testid="text-link-checker-description">
-            Verify the credibility of any link or article with AI-powered analysis
+        <div className="mb-5 rounded-[24px] bg-white/80 border border-slate-100 shadow-[0_12px_28px_rgba(37,52,79,0.06)] p-4 sm:p-5">
+          <h2 className="text-2xl sm:text-3xl font-bold mb-2 break-words" data-testid="text-link-checker-title">Link Checker</h2>
+          <p className="text-sm sm:text-base text-gray-600 leading-6" data-testid="text-link-checker-description">
+            Use this as context and cues to help you decide what feels credible, what needs checking, and what to question.
           </p>
         </div>
 
         {/* Link Input Form */}
-        <Card className="mb-6">
+        <Card className="mb-5 border-0 shadow-[0_12px_28px_rgba(37,52,79,0.06)] rounded-[26px] bg-white/90">
           <CardContent className="p-4 sm:p-6">
             <div className="space-y-4">
               <Label htmlFor="url-input" className="text-sm font-medium text-gray-700 mb-2 block">Paste your link here</Label>
-              <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-3">
+              <div className="flex flex-col sm:flex-row gap-3 sm:gap-3">
                 <Input
                   id="url-input"
                   type="url"
@@ -202,16 +262,16 @@ export default function LinkCheckerTab() {
                   value={url}
                   onChange={(e) => setUrl(e.target.value)}
                   onKeyPress={(e) => e.key === "Enter" && handleCheck()}
-                  className="flex-1 w-full"
+                  className="flex-1 w-full h-11 text-sm sm:text-base rounded-xl border-slate-200 bg-slate-50/80 min-w-0"
                   data-testid="input-url"
                 />
-                <Button onClick={handleCheck} disabled={checkLinkMutation.isPending} className="w-full sm:w-auto shrink" data-testid="button-check-link">
+                <Button onClick={handleCheck} disabled={checkLinkMutation.isPending} className="w-full sm:w-auto min-w-[120px] h-11 rounded-xl shrink-0" data-testid="button-check-link">
                   <Search className="w-4 h-4 mr-2" />
                   {checkLinkMutation.isPending ? "Analyzing..." : "Check"}
                 </Button>
               </div>
-              <p className="text-sm text-gray-500">
-                We&apos;ll analyze the page on the server and return a summary, scores, and supporting source links.
+              <p className="text-sm text-gray-500 leading-6 break-words">
+                Paste a link and review the context, signals, and sources. Prova helps you assess it — you decide what is real.
               </p>
             </div>
           </CardContent>
@@ -219,23 +279,23 @@ export default function LinkCheckerTab() {
 
         {/* Latest Check */}
         {shouldShowResult && latestCheck && (
-          <Card className="mb-6" data-testid="card-check-result">
+          <Card className="mb-6 border-0 shadow-[0_12px_28px_rgba(37,52,79,0.06)] rounded-[26px] bg-white/90" data-testid="card-check-result">
             <CardContent className="p-4 sm:p-6">
-              <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-4 space-y-4 sm:space-y-0">
-                <div className={`w-16 h-16 ${getVerdictColor(latestCheck.verdict)} rounded-xl flex items-center justify-center flex-shrink-0`}>
-                  {getVerdictIcon(latestCheck.verdict)}
+              <div className="flex flex-col gap-4 md:flex-row md:items-start">
+                <div className={`w-16 h-16 ${getVerdictColor(effectiveVerdict)} rounded-2xl flex items-center justify-center flex-shrink-0 mx-auto md:mx-0`}>
+                  {getVerdictIcon(effectiveVerdict)}
                 </div>
-                <div className="flex-1 space-y-3">
-                  <div>
-                    <h3 className="text-xl font-bold mb-1 break-all" data-testid="text-verdict">
-  <strong className="block overflow-hidden">{latestCheck.url}</strong>
-</h3>
-                    <div className="flex items-center space-x-2 mb-2 flex-wrap">
-                      <span className={`inline-block px-2 py-1 rounded-full text-white text-xs font-medium ${getVerdictColor(latestCheck.verdict)}`}>
-                        {getVerdictText(latestCheck.verdict).toUpperCase()}
+                <div className="flex-1 min-w-0 space-y-4">
+                  <div className="space-y-2">
+                    <h3 className="text-lg sm:text-xl font-bold break-all leading-7" data-testid="text-verdict">
+                      {latestCheck.url}
+                    </h3>
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className={`inline-block px-2.5 py-1 rounded-full text-white text-[10px] font-semibold tracking-[0.12em] ${getVerdictColor(effectiveVerdict)}`}>
+                        {getVerdictText(effectiveVerdict).toUpperCase()}
                       </span>
                       {latestCheck.modelUsed && (
-                        <Badge variant="outline" className="text-xs mt-1 sm:mt-0">
+                        <Badge variant="outline" className="text-xs rounded-full">
                           <Brain className="w-3 h-3 mr-1" />
                           {getModelDisplayName(latestCheck.modelUsed)}
                         </Badge>
@@ -243,20 +303,77 @@ export default function LinkCheckerTab() {
                     </div>
                   </div>
 
-                  <p className="text-gray-700 mb-2" data-testid="text-verdict-description">
-                    {getVerdictDescription(latestCheck.verdict, latestCheck.summary, latestCheck.credibilityScore, latestCheck.domain)}
-                  </p>
+                  <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                    <p className="text-sm sm:text-base text-gray-700 leading-6" data-testid="text-verdict-description">
+                      {getVerdictDescription(effectiveVerdict, latestCheck.summary, latestCheck.credibilityScore, latestCheck.domain)}
+                    </p>
+
+                    <div className="flex-shrink-0">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="rounded-full border-slate-200 bg-white px-3 py-1.5 text-xs sm:text-sm font-medium text-slate-700"
+                        onClick={() => setShowDecisionOptions((value) => !value)}
+                      >
+                        Your decision
+                      </Button>
+                    </div>
+                  </div>
+
+                  {showDecisionOptions && (
+                    <div className="flex flex-wrap gap-2 pt-1">
+                      <Button
+                        variant="default"
+                        className="bg-emerald-600 hover:bg-emerald-700 text-xs sm:text-sm"
+                        onClick={() => updateDecisionMutation.mutate({ id: latestCheck.id, decision: "real" })}
+                        disabled={updateDecisionMutation.isPending}
+                      >
+                        Real
+                      </Button>
+                      <Button
+                        variant="default"
+                        className="bg-rose-600 hover:bg-rose-700 text-xs sm:text-sm"
+                        onClick={() => updateDecisionMutation.mutate({ id: latestCheck.id, decision: "not-real" })}
+                        disabled={updateDecisionMutation.isPending}
+                      >
+                        Not real
+                      </Button>
+                      <Button
+                        variant="outline"
+                        className="text-xs sm:text-sm"
+                        onClick={() => updateDecisionMutation.mutate({ id: latestCheck.id, decision: "unsure" })}
+                        disabled={updateDecisionMutation.isPending}
+                      >
+                        Unsure
+                      </Button>
+                    </div>
+                  )}
+
+                  {effectiveUserDecision && (
+                    <div className="rounded-2xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-700">
+                      <span className="font-medium">Your take:</span>{" "}
+                      {effectiveUserDecision === "real" && "Real"}
+                      {effectiveUserDecision === "not-real" && "Not real"}
+                      {effectiveUserDecision === "unsure" && "Unsure"}
+                    </div>
+                  )}
 
                   {latestCheck.title && latestCheck.title !== latestCheck.url && (
                     <div>
                       <h4 className="font-semibold text-sm text-gray-600">Article Title</h4>
-                      <p className="text-sm" data-testid="text-article-title">{latestCheck.title}</p>
+                      <p className="text-sm text-gray-700" data-testid="text-article-title">{latestCheck.title}</p>
                     </div>
                   )}
 
-                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                    <div className="bg-gray-50 rounded-xl p-3 space-y-1">
-                      <p className="text-sm font-medium text-gray-600">Credibility</p>
+                  <div className="rounded-2xl border border-slate-200 bg-gradient-to-r from-slate-50 to-blue-50 p-4">
+                    <p className="text-[11px] uppercase tracking-[0.16em] text-slate-500 mb-1">AI source insight</p>
+                    <p className="text-sm font-semibold text-slate-800">{buildSourceInsight({ ...latestCheck, verdict: effectiveVerdict }).label}</p>
+                    <p className="text-sm text-slate-600 mt-2 leading-6">{buildSourceInsight({ ...latestCheck, verdict: effectiveVerdict }).detail}</p>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3 sm:gap-4">
+                    <div className="bg-slate-50 rounded-2xl p-3.5 space-y-1">
+                      <p className="text-xs font-medium uppercase tracking-[0.12em] text-gray-500">Credibility</p>
                       <p className={`font-semibold ${
                         (latestCheck.credibilityScore || 0) >= 70 ? 'text-green-600' :
                         (latestCheck.credibilityScore || 0) >= 40 ? 'text-yellow-600' : 'text-red-600'
@@ -266,15 +383,15 @@ export default function LinkCheckerTab() {
                       </p>
                       <p className="text-xs text-gray-500">{latestCheck.credibilityScore || 0}/100</p>
                     </div>
-                    <div className="bg-gray-50 rounded-xl p-3 space-y-1">
-                      <p className="text-sm font-medium text-gray-600">Bias Rating</p>
+                    <div className="bg-slate-50 rounded-2xl p-3.5 space-y-1">
+                      <p className="text-xs font-medium uppercase tracking-[0.12em] text-gray-500">Bias Rating</p>
                       <p className={`font-semibold capitalize ${
                         latestCheck.biasRating === 'low' ? 'text-green-600' :
                         latestCheck.biasRating === 'medium' ? 'text-yellow-600' : 'text-red-600'
                       }`}>{latestCheck.biasRating || 'Unknown'}</p>
                     </div>
-                    <div className="bg-gray-50 rounded-xl p-3 space-y-1">
-                      <p className="text-sm font-medium text-gray-600">Fact-Check Score</p>
+                    <div className="bg-slate-50 rounded-2xl p-3.5 space-y-1">
+                      <p className="text-xs font-medium uppercase tracking-[0.12em] text-gray-500">Fact-Check Score</p>
                       <p className={`font-semibold ${
                         (latestCheck.factCheckScore || 0) >= 70 ? 'text-green-600' :
                         (latestCheck.factCheckScore || 0) >= 40 ? 'text-yellow-600' : 'text-red-600'
@@ -282,12 +399,12 @@ export default function LinkCheckerTab() {
                     </div>
                   </div>
 
-                  {getSourceUrls(latestCheck).length > 0 && (
+                  {(latestCheck.sources ?? []).length > 0 && (
                     <div className="mt-3 overflow-x-auto">
                       <h4 className="font-semibold text-sm text-gray-600 mb-2">Sources Referenced</h4>
                       <div className="bg-gray-50 rounded-lg p-3 w-full break-words overflow-hidden">
                         <ul className="space-y-2">
-                          {getSourceUrls(latestCheck).slice(0, 5).map((src: string, idx: number) => (
+                          {(latestCheck.sources ?? []).slice(0, 5).map((src: string, idx: number) => (
                             <li key={idx} className="text-sm flex items-start space-x-2">
                               <ExternalLink className="w-3 h-3 mt-0.5 text-gray-400 flex-shrink-0" />
                               {src.startsWith('http') ? (
@@ -299,9 +416,9 @@ export default function LinkCheckerTab() {
                               )}
                             </li>
                           ))}
-                          {getSourceUrls(latestCheck).length > 5 && (
+                          {(latestCheck.sources ?? []).length > 5 && (
                             <li className="text-xs text-gray-500">
-                              +{getSourceUrls(latestCheck).length - 5} more sources
+                              +{(latestCheck.sources ?? []).length - 5} more sources
                             </li>
                           )}
                         </ul>
@@ -360,11 +477,12 @@ export default function LinkCheckerTab() {
                             <h4 className="font-semibold text-sm text-gray-600 mb-2">Analysis Model</h4>
                             <div className="bg-gray-50 rounded-lg p-3">
                               <p className="text-sm text-gray-700">
-                                This analysis was performed using <strong>{getModelDisplayName(latestCheck.modelUsed)}</strong>
+                                This is one AI signal from <strong>{getModelDisplayName(latestCheck.modelUsed)}</strong>
                                 {latestCheck.modelUsed.includes('compound-beta') 
                                   ? ' with built-in web search capabilities' 
                                   : ' with external web search tools'
-                                }
+                                }.
+                                It is meant to support your judgment, not replace it.
                               </p>
                             </div>
                           </div>
@@ -388,13 +506,13 @@ export default function LinkCheckerTab() {
         )}
 
         {/* Recent Checks */}
-        <Card>
+        <Card className="border-0 shadow-[0_12px_28px_rgba(37,52,79,0.06)] rounded-[26px] bg-white/90">
           <CardContent className="p-4 sm:p-6">
             <h3 className="text-lg font-semibold mb-4" data-testid="text-recent-checks">Recent Checks</h3>
             {recentLoading ? (
               <div className="space-y-3">
                 {[...Array(3)].map((_, i) => (
-                  <div key={i} className="flex flex-col sm:flex-row items-center justify-between p-3 bg-gray-50 rounded-xl space-y-2 sm:space-y-0">
+                  <div key={i} className="flex flex-col sm:flex-row items-center justify-between p-3 bg-gray-50 rounded-xl gap-3 sm:gap-0">
                     <div className="flex items-center space-x-3 w-full sm:w-auto">
                       <Skeleton className="w-8 h-8 rounded-lg" />
                       <div className="flex-1 space-y-1">
@@ -411,24 +529,26 @@ export default function LinkCheckerTab() {
                 {recentChecks.map((check) => {
                   const displaySource = getDisplayTitle(check);
                   return (
-                    <div key={check.id} className="flex flex-col sm:flex-row sm:items-center justify-between p-4 bg-gray-50 rounded-xl gap-4 overflow-hidden" data-testid={`recent-check-${check.id}`}>
-                      <div className="flex-1 min-w-0 mb-2 sm:mb-0">
-  <div className="flex items-center space-x-2 flex-wrap">
-    <p className="font-medium text-sm truncate">{displaySource}</p>
+                    <div key={check.id} className="flex flex-col gap-3 p-3.5 sm:p-4 bg-slate-50 rounded-2xl overflow-hidden" data-testid={`recent-check-${check.id}`}>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex flex-wrap items-center gap-2 min-w-0">
+                          <p className="font-medium text-sm sm:text-[15px] break-all text-gray-900 min-w-0 max-w-full">{displaySource}</p>
 
-                          <Badge className={`${getVerdictColor(check.verdict)} text-white text-xs`}>{getVerdictText(check.verdict)}</Badge>
-                          {check.modelUsed && <Badge variant="outline" className="text-xs">{getModelDisplayName(check.modelUsed)}</Badge>}
+                          <Badge className={`${getVerdictColor(check.finalVerdict ?? check.verdict)} text-white text-[10px] rounded-full whitespace-nowrap`}>
+                            {getVerdictText(check.finalVerdict ?? check.verdict)}
+                          </Badge>
+                          {check.modelUsed && <Badge variant="outline" className="text-[10px] rounded-full whitespace-nowrap">{getModelDisplayName(check.modelUsed)}</Badge>}
                         </div>
-                        <p className="text-xs text-gray-500 mb-1">
+                        <p className="text-[11px] sm:text-xs text-gray-500 mt-1 break-all">
                           {check.checkedAt && new Date(check.checkedAt).toLocaleDateString()} • {check.domain || (check.url ? new URL(check.url).hostname : '')}
                         </p>
                         {check.summary && (
-                          <p className="text-sm text-gray-700 mt-1 line-clamp-2">{check.summary}</p>
+                          <p className="text-sm text-gray-700 mt-2 line-clamp-2 break-words">{check.summary}</p>
                         )}
                       </div>
-                      <div className="text-right shrink-0">
-                        <p className="text-xs text-gray-500">Score</p>
-                        <p className="text-sm font-medium">{check.credibilityScore || 0}/100</p>
+                      <div className="text-left sm:text-right shrink-0">
+                        <p className="text-[10px] uppercase tracking-[0.12em] text-gray-500">Score</p>
+                        <p className="text-sm font-medium break-all">{check.credibilityScore || 0}/100</p>
                       </div>
                     </div>
                   );

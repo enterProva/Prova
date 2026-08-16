@@ -1,4 +1,4 @@
-import { z } from "zod";
+﻿import { z } from "zod";
 
 export const LinkCheckVerdictSchema = z.enum([
   "verified",
@@ -17,9 +17,14 @@ export const LinkCheckAIResponseSchema = z
     factCheckScore: z.number().min(0).max(100),
     summary: z.string().min(1),
     sourceUrls: z.array(z.string()),
-    reasoning: z.string().min(1).optional(),
-    title: z.string().min(1).optional(),
+    reasoning: z.string().min(1).nullable().optional(),
+    title: z.string().min(1).nullable().optional(),
     publicationDate: z.string().min(1).nullable().optional(),
+    searchResults: z.array(z.object({
+      title: z.string().optional(),
+      url: z.string().optional(),
+      snippet: z.string().optional(),
+    })).optional(),
   })
   .strict();
 

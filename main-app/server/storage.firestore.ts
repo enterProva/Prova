@@ -23,6 +23,7 @@ interface IStorage {
   updateUserStats(userId: string, stats: Partial<User>): Promise<User>;
 
   createLinkCheck(data: InsertLinkCheck): Promise<LinkCheck>;
+  updateLinkCheckDecision(id: string, userDecision: "real" | "not-real" | "unsure"): Promise<LinkCheck>;
   getLinkCheck(id: string): Promise<LinkCheck | undefined>;
   getUserLinkChecks(userId: string, limit?: number): Promise<LinkCheck[]>;
   getRecentLinkChecks(limit?: number): Promise<LinkCheck[]>;
@@ -43,17 +44,6 @@ interface IStorage {
 }
 
 // ----------------- REVIVE HELPERS -----------------
-function reviveDate(value: any): Date | null {
-  if (!value) return null;
-  if (value instanceof Date) return value;
-  if (typeof value?.toDate === "function") {
-    return value.toDate();
-  }
-
-  const parsed = new Date(value);
-  return Number.isNaN(parsed.getTime()) ? null : parsed;
-}
-
 function reviveUser(doc: any, id?: string): User {
   return {
     id: id ?? doc.id,
@@ -67,42 +57,35 @@ function reviveUser(doc: any, id?: string): User {
     pauseCount: doc.pauseCount ?? 0,
     mindfulShares: doc.mindfulShares ?? 0,
     completedLessons: doc.completedLessons ?? 0,
-    lastActiveDate: reviveDate(doc.lastActiveDate),
-    createdAt: reviveDate(doc.createdAt),
-    updatedAt: reviveDate(doc.updatedAt),
+    lastActiveDate: doc.lastActiveDate ? new Date(doc.lastActiveDate) : null,
+    createdAt: doc.createdAt ? new Date(doc.createdAt) : null,
+    updatedAt: doc.updatedAt ? new Date(doc.updatedAt) : null,
   };
 }
 
 function reviveLinkCheck(doc: any, id?: string): LinkCheck {
-  const sourceUrls = Array.isArray(doc.sourceUrls)
-    ? doc.sourceUrls
-    : Array.isArray(doc.factCheckSources)
-      ? doc.factCheckSources
-      : null;
-
   return {
     id: id ?? doc.id,
     userId: doc.userId ?? null,
-    checkedAt: reviveDate(doc.checkedAt),
+    checkedAt: doc.checkedAt ? new Date(doc.checkedAt) : null,
     url: doc.url,
     title: doc.title ?? null,
-    domain: doc.domain ?? null,
     verdict: doc.verdict,
+    finalVerdict: doc.finalVerdict ?? doc.verdict ?? null,
+    userDecision: doc.userDecision ?? null,
     credibilityScore: doc.credibilityScore ?? null,
     biasRating: doc.biasRating ?? null,
     factCheckScore: doc.factCheckScore ?? null,
-    summary: doc.summary ?? null,
-    sourceUrls,
     sourcesCount: doc.sourcesCount ?? null,
-    publicationDate: reviveDate(doc.publicationDate),
-    factCheckSources: Array.isArray(doc.factCheckSources) ? doc.factCheckSources : sourceUrls,
+    publicationDate: doc.publicationDate ?? null,
+    factCheckSources: doc.factCheckSources ?? null,
   };
 }
 
 function reviveFeedPost(doc: any, id?: string): FeedPost {
   return {
     id: id ?? doc.id,
-    createdAt: reviveDate(doc.createdAt),
+    createdAt: doc.createdAt ? new Date(doc.createdAt) : null,
     authorId: doc.authorId ?? null,
     content: doc.content,
     imageUrl: doc.imageUrl ?? null,
@@ -116,9 +99,9 @@ function reviveFeedPost(doc: any, id?: string): FeedPost {
 function revivePauseNudge(doc: any, id?: string): PauseNudge {
   return {
     id: id ?? doc.id,
-    createdAt: reviveDate(doc.createdAt),
+    createdAt: doc.createdAt ? new Date(doc.createdAt) : null,
     userId: doc.userId ?? null,
-    respondedAt: reviveDate(doc.respondedAt),
+    respondedAt: doc.respondedAt ? new Date(doc.respondedAt) : null,
     nudgeType: doc.nudgeType,
     prompt: doc.prompt,
     response: doc.response ?? null,
@@ -134,16 +117,16 @@ function reviveLearningProgress(doc: any, id?: string): LearningProgress {
     category: doc.category,
     status: doc.status,
     progressPercent: doc.progressPercent ?? 0,
-    completedAt: reviveDate(doc.completedAt),
-    createdAt: reviveDate(doc.createdAt),
+    completedAt: doc.completedAt ? new Date(doc.completedAt) : null,
+    createdAt: doc.createdAt ? new Date(doc.createdAt) : null,
   };
 }
 
 function reviveReport(doc: any, id?: string): Report {
   return {
     id: id ?? doc.id,
-    createdAt: reviveDate(doc.createdAt),
-    reviewedAt: reviveDate(doc.reviewedAt),
+    createdAt: doc.createdAt ? new Date(doc.createdAt) : null,
+    reviewedAt: doc.reviewedAt ? new Date(doc.reviewedAt) : null,
     userId: doc.userId ?? null,
     status: doc.status ?? "pending",
     reportType: doc.reportType,
@@ -203,42 +186,44 @@ export class FirestoreStorage implements IStorage {
   // ----------------- LINK CHECKS -----------------
   async createLinkCheck(linkCheckData: InsertLinkCheck): Promise<LinkCheck> {
     const id = randomUUID();
-    const sourceUrls = Array.isArray(linkCheckData.sourceUrls)
-      ? linkCheckData.sourceUrls
-      : Array.isArray(linkCheckData.factCheckSources)
-        ? linkCheckData.factCheckSources
-        : null;
-
     const data: LinkCheck = {
       id,
       userId: linkCheckData.userId ?? null,
       checkedAt: new Date(),
       url: linkCheckData.url,
       title: linkCheckData.title ?? null,
-      domain: linkCheckData.domain ?? null,
       verdict: linkCheckData.verdict,
+      finalVerdict: linkCheckData.finalVerdict ?? linkCheckData.verdict ?? null,
+      userDecision: linkCheckData.userDecision ?? null,
       credibilityScore: linkCheckData.credibilityScore ?? null,
       biasRating: linkCheckData.biasRating ?? null,
       factCheckScore: linkCheckData.factCheckScore ?? null,
-      summary: linkCheckData.summary ?? null,
-      sourceUrls,
-      sourcesCount: sourceUrls?.length ?? linkCheckData.sourcesCount ?? null,
+      sourcesCount: linkCheckData.sourcesCount ?? null,
       publicationDate: linkCheckData.publicationDate ?? null,
-      factCheckSources: sourceUrls,
+      factCheckSources: linkCheckData.factCheckSources ?? null,
     };
     await db.collection("linkChecks").doc(id).set({ ...data, checkedAt: (data.checkedAt ?? new Date()).toISOString() });
+    return data;
+  }
 
-    if (data.userId) {
-      const user = await this.getUser(data.userId);
-      if (user) {
-        await this.updateUserStats(data.userId, {
-          lastActiveDate: new Date(),
-          linksChecked: (user.linksChecked ?? 0) + 1,
-        });
-      }
+  async updateLinkCheckDecision(id: string, userDecision: "real" | "not-real" | "unsure"): Promise<LinkCheck> {
+    const ref = db.collection("linkChecks").doc(id);
+    const snapshot = await ref.get();
+
+    if (!snapshot.exists) {
+      throw new Error("Link check not found");
     }
 
-    return data;
+    const mappedVerdict = userDecision === "real" ? "verified" : userDecision === "not-real" ? "false" : "pending";
+    const updateData = {
+      userDecision,
+      finalVerdict: mappedVerdict,
+      verdict: mappedVerdict,
+    };
+
+    await ref.update(updateData);
+    const updated = await ref.get();
+    return reviveLinkCheck(updated.data()!, id);
   }
 
   async getLinkCheck(id: string): Promise<LinkCheck | undefined> {
@@ -327,17 +312,6 @@ export class FirestoreStorage implements IStorage {
       response: nudgeData.response ?? null,
     };
     await db.collection("pauseNudges").doc(id).set({ ...nudge, createdAt: (nudge.createdAt ?? new Date()).toISOString() });
-
-    if (nudge.userId && nudge.response === "completed") {
-      const user = await this.getUser(nudge.userId);
-      if (user) {
-        await this.updateUserStats(nudge.userId, {
-          lastActiveDate: new Date(),
-          pauseCount: (user.pauseCount ?? 0) + 1,
-        });
-      }
-    }
-
     return nudge;
   }
 
@@ -359,27 +333,9 @@ export class FirestoreStorage implements IStorage {
 
   async updatePauseNudgeResponse(id: string, response: string): Promise<PauseNudge> {
     const ref = db.collection("pauseNudges").doc(id);
-    const existing = await ref.get();
-    const previous = existing.exists ? revivePauseNudge(existing.data()!, existing.id) : null;
     await ref.update({ response, respondedAt: new Date().toISOString() });
     const doc = await ref.get();
-    const updated = revivePauseNudge(doc.data()!, doc.id);
-
-    if (
-      updated.userId &&
-      response === "completed" &&
-      previous?.response !== "completed"
-    ) {
-      const user = await this.getUser(updated.userId);
-      if (user) {
-        await this.updateUserStats(updated.userId, {
-          lastActiveDate: new Date(),
-          pauseCount: (user.pauseCount ?? 0) + 1,
-        });
-      }
-    }
-
-    return updated;
+    return revivePauseNudge(doc.data()!, doc.id);
   }
 
   // ----------------- LEARNING PROGRESS -----------------
@@ -403,63 +359,12 @@ export class FirestoreStorage implements IStorage {
       .limit(1)
       .get();
 
-    let savedProgress: LearningProgress;
+    if (snapshot.empty) throw new Error("Learning progress not found");
 
-    if (snapshot.empty) {
-      const id = randomUUID();
-      savedProgress = {
-        id,
-        userId,
-        lessonId,
-        lessonTitle: progress.lessonTitle ?? "Untitled Lesson",
-        category: progress.category ?? "basics",
-        status: progress.status ?? "available",
-        progressPercent: progress.progressPercent ?? 0,
-        completedAt: progress.completedAt ?? null,
-        createdAt: new Date(),
-      };
-
-      await db.collection("learningProgress").doc(id).set({
-        ...savedProgress,
-        completedAt: savedProgress.completedAt
-          ? new Date(savedProgress.completedAt).toISOString()
-          : null,
-        createdAt: (savedProgress.createdAt ?? new Date()).toISOString(),
-      });
-    } else {
-      const doc = snapshot.docs[0];
-      const current = reviveLearningProgress(doc.data(), doc.id);
-      savedProgress = {
-        ...current,
-        ...progress,
-        id: doc.id,
-        lessonId,
-        userId,
-      };
-
-      await doc.ref.set({
-        ...savedProgress,
-        completedAt: savedProgress.completedAt
-          ? new Date(savedProgress.completedAt).toISOString()
-          : null,
-        createdAt: savedProgress.createdAt
-          ? new Date(savedProgress.createdAt).toISOString()
-          : new Date().toISOString(),
-      });
-    }
-
-    const allProgress = await this.getUserLearningProgress(userId);
-    const completedLessons = allProgress.filter((lesson) => lesson.status === "completed").length;
-    const user = await this.getUser(userId);
-
-    if (user) {
-      await this.updateUserStats(userId, {
-        completedLessons,
-        lastActiveDate: new Date(),
-      });
-    }
-
-    return savedProgress;
+    const doc = snapshot.docs[0];
+    const updated = { ...doc.data(), ...progress };
+    await doc.ref.set(updated);
+    return reviveLearningProgress(updated, doc.id);
   }
 
   // ----------------- REPORTS -----------------
