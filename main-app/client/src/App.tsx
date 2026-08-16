@@ -8,7 +8,7 @@ import Landing from "@/pages/landing";
 import AuthSelection from "@/pages/auth-selection";
 import Home from "@/pages/home";
 import NotFound from "@/pages/not-found";
-import { Analytics } from "@vercel/analytics/next"
+import { Analytics } from "@vercel/analytics/react"
 
 // App.tsx (ProtectedRoute)
 function ProtectedRoute({ component: Component }: { component: any }) {
