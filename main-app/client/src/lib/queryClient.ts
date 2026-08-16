@@ -1,4 +1,5 @@
 import { QueryClient, QueryFunction } from "@tanstack/react-query";
+import { API_BASE_URL } from "./config";
 
 async function throwIfResNotOk(res: Response) {
   if (!res.ok) {
@@ -7,12 +8,26 @@ async function throwIfResNotOk(res: Response) {
   }
 }
 
+/**
+ * Construct full API URL
+ * In dev: returns relative path (handled by Vite proxy)
+ * In prod: returns full URL to Render backend
+ */
+function getFullUrl(path: string): string {
+  if (API_BASE_URL.startsWith("http")) {
+    return `${API_BASE_URL}${path.startsWith("/") ? "" : "/"}${path}`;
+  }
+  // Relative path - will use Vite proxy in dev
+  return path.startsWith("/") ? path : `/${path}`;
+}
+
 export async function apiRequest(
   method: string,
   url: string,
   data?: unknown | undefined,
 ): Promise<Response> {
-  const res = await fetch(url, {
+  const fullUrl = getFullUrl(url);
+  const res = await fetch(fullUrl, {
     method,
     headers: data ? { "Content-Type": "application/json" } : {},
     body: data ? JSON.stringify(data) : undefined,
@@ -29,7 +44,9 @@ export const getQueryFn: <T>(options: {
 }) => QueryFunction<T> =
   ({ on401: unauthorizedBehavior }) =>
   async ({ queryKey }) => {
-    const res = await fetch(queryKey.join("/") as string, {
+    const path = queryKey.join("/") as string;
+    const fullUrl = getFullUrl(path);
+    const res = await fetch(fullUrl, {
       credentials: "include",
     });
 
