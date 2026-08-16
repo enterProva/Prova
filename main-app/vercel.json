@@ -3,9 +3,6 @@
   "installCommand": "npm ci --legacy-peer-deps",
   "outputDirectory": "dist/public",
   "framework": "vite",
-  "env": {
-    "VITE_API_URL": "@vite-api-url"
-  },
   "rewrites": [
     {
       "source": "/api/(.*)",
