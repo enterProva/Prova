@@ -163,31 +163,31 @@ export default function PauseNudgesTab() {
 
         {/* Active Nudge */}
         {!showResponse ? (
-          <Card className="bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg mb-6 transition-all duration-500">
-            <CardContent className="p-8 text-center">
-              <div className="w-16 h-16 bg-white bg-opacity-20 rounded-full flex items-center justify-center mx-auto mb-4">
+          <Card className="bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg mb-6 transition-all duration-500 overflow-hidden">
+            <CardContent className="p-5 sm:p-8 text-center">
+              <div className="w-14 h-14 sm:w-16 sm:h-16 bg-white bg-opacity-20 rounded-full flex items-center justify-center mx-auto mb-4">
                 {getIcon(currentNudge.type)}
               </div>
-              <h3 className="text-xl font-bold mb-3">Before you act...</h3>
-              <p className="text-lg mb-6">{currentNudge.prompt}</p>
+              <h3 className="text-lg sm:text-xl font-bold mb-3">Before you act...</h3>
+              <p className="text-base sm:text-lg mb-6 break-words">{currentNudge.prompt}</p>
               {currentNudge.lesson && (
-                <p className="text-sm text-white/80 mb-6 italic">{currentNudge.lesson}</p>
+                <p className="text-sm text-white/80 mb-6 italic break-words">{currentNudge.lesson}</p>
               )}
-              <div className="flex space-x-4 justify-center">
+              <div className="flex flex-col sm:flex-row gap-3 sm:justify-center">
                 {(() => {
                   const options = getResponseOptions(currentNudge.type);
                   return (
                     <>
                       <Button
                         onClick={() => handleResponse("yes")}
-                        className="bg-white text-primary px-6 py-3 rounded-xl font-medium hover:bg-gray-100 transition-colors duration-200"
+                        className="w-full sm:w-auto bg-white text-primary px-6 py-3 rounded-xl font-medium hover:bg-gray-100 transition-colors duration-200 whitespace-normal h-auto"
                       >
                         {options.positive}
                       </Button>
                       <Button
                         onClick={() => handleResponse("no")}
                         variant="outline"
-                        className="bg-white text-primary px-6 py-3 rounded-xl font-medium hover:bg-gray-100 transition-colors duration-200"
+                        className="w-full sm:w-auto bg-white text-primary px-6 py-3 rounded-xl font-medium hover:bg-gray-100 transition-colors duration-200 whitespace-normal h-auto"
                       >
                         {options.negative}
                       </Button>
@@ -198,13 +198,13 @@ export default function PauseNudgesTab() {
             </CardContent>
           </Card>
         ) : (
-          <Card className="bg-gradient-to-r from-green-500 to-blue-500 text-white shadow-lg mb-6 transition-all duration-500">
-            <CardContent className="p-8 text-center">
-              <div className="w-16 h-16 bg-white bg-opacity-20 rounded-full flex items-center justify-center mx-auto mb-4">
+          <Card className="bg-gradient-to-r from-green-500 to-blue-500 text-white shadow-lg mb-6 transition-all duration-500 overflow-hidden">
+            <CardContent className="p-5 sm:p-8 text-center">
+              <div className="w-14 h-14 sm:w-16 sm:h-16 bg-white bg-opacity-20 rounded-full flex items-center justify-center mx-auto mb-4">
                 <CheckCircle className="w-8 h-8" />
               </div>
-              <h3 className="text-xl font-bold mb-3">{lastCorrect ? "Nice pause." : "Good choice — consider the recommended action"}</h3>
-              <p className="text-lg mb-4">{lastCorrect ? "Taking a moment to slow down helps build a more careful digital habit." : "That was thoughtful — next time, try the recommended action to strengthen the habit."}</p>
+              <h3 className="text-lg sm:text-xl font-bold mb-3">{lastCorrect ? "Nice pause." : "Good choice — consider the recommended action"}</h3>
+              <p className="text-base sm:text-lg mb-4 break-words">{lastCorrect ? "Taking a moment to slow down helps build a more careful digital habit." : "That was thoughtful — next time, try the recommended action to strengthen the habit."}</p>
               <p className="text-white/80 italic">Next mindful moment coming up...</p>
             </CardContent>
           </Card>
@@ -264,3 +264,4 @@ export default function PauseNudgesTab() {
     </div>
   );
 }
+
