@@ -9,7 +9,8 @@ services:
     plan: standard
     # Important: Point to main-app subdirectory since this is a monorepo
     rootDir: main-app
-    buildCommand: npm run build
+    # On Free plan, include npm install in the build command (no Pre-Deploy Command available)
+    buildCommand: npm install && npm run build
     startCommand: npm start
     envVars:
       - key: NODE_ENV
