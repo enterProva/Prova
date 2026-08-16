@@ -51,6 +51,7 @@ export default function App() {
     <QueryClientProvider client={queryClient}>
       {showIntroSplash ? <SplashScreen /> : <Router />}
     <Analytics/>
+    </>
     </QueryClientProvider>
   );
 }
