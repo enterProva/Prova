@@ -10,7 +10,8 @@ services:
     # Important: Point to main-app subdirectory since this is a monorepo
     rootDir: main-app
     # On Free plan, include npm install in the build command (no Pre-Deploy Command available)
-    buildCommand: npm install && npm run build
+    # Use --legacy-peer-deps to handle langchain peer dependency conflicts
+    buildCommand: npm install --legacy-peer-deps && npm run build
     startCommand: npm start
     envVars:
       - key: NODE_ENV
