@@ -58,7 +58,7 @@ export default function Home() {
         <div className="bg-white shadow-sm border-b px-4 py-3 flex items-center justify-between">
           <div className="flex items-center space-x-3">
             <div className="w-8 h-8 bg-transparent rounded-lg flex items-center justify-center">
-              <img src="/mobile%20app-logo.png" alt="Prova" className="w-6 h-6 object-contain" data-testid="img-logo-mobile" />
+              <img src="/mobile-app-logo.png" alt="Prova" className="w-6 h-6 object-contain" data-testid="img-logo-mobile" />
             </div>
             <h1 className="font-bold text-lg tracking-[-0.05em]" data-testid="text-app-title-mobile">PROVA</h1>
           </div>

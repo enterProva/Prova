@@ -40,7 +40,7 @@ export default function AuthSelection() {
         <CardContent className="p-6 sm:p-8">
           <div className="text-center mb-8">
             <div className="w-14 h-14 rounded-full flex items-center justify-center mb-4 mx-auto bg-transparent shadow-none">
-              <img src="/mobile%20app-logo.png" alt="Prova" className="w-10 h-10 object-contain" />
+              <img src="/mobile-app-logo.png" alt="Prova" className="w-10 h-10 object-contain" />
             </div>
             <h2 className="text-xl sm:text-2xl font-bold mb-2">Get Started</h2>
             <p className="text-gray-600">Choose how you'd like to proceed</p>

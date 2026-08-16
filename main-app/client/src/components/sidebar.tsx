@@ -72,7 +72,7 @@ export default function Sidebar({ activeTab, setActiveTab, isOpen, isCollapsed, 
         <div className={`flex items-center ${isCollapsed ? 'justify-center' : 'justify-between'}`}>
           <div className={`flex items-center ${isCollapsed ? 'justify-center w-full' : 'space-x-3'}`}>
             <div className="w-10 h-10 bg-transparent rounded-xl flex items-center justify-center shadow-none">
-              <img src="/mobile%20app-logo.png" alt="Prova" className="w-8 h-8 object-contain" data-testid="img-logo-sidebar" />
+              <img src="/mobile-app-logo.png" alt="Prova" className="w-8 h-8 object-contain" data-testid="img-logo-sidebar" />
             </div>
             {!isCollapsed && (
               <div>

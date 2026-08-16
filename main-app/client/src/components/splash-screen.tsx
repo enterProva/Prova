@@ -20,7 +20,7 @@ export default function SplashScreen() {
     >
       <div className="text-center">
         <div className="w-24 h-24 rounded-full flex items-center justify-center mb-6 mx-auto animate-pulse bg-transparent shadow-none">
-          <img src="/mobile%20app-logo.png" alt="Prova" className="w-16 h-16 object-contain bg-transparent" data-testid="img-logo-splash" />
+          <img src="/mobile-app-logo.png" alt="Prova" className="w-16 h-16 object-contain bg-transparent" data-testid="img-logo-splash" />
         </div>
         <h1 className="text-4xl font-bold text-white mb-2 tracking-[-0.06em]" data-testid="text-app-name">
           PROVA
