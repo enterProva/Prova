@@ -6,9 +6,21 @@ import Analytics from '@vercel/analytics/astro'
 interface Props {
 	title: string;
 	description?: string;
+	image?: string;
+	keywords?: string;
+	noindex?: boolean;
 }
 
-const { title, description = 'Prova - Pause, Prove, Protect.' } = Astro.props;
+const { 
+	title = 'Prova — Pause. Prove. Protect. | Media Literacy for Gen Z',
+	description = 'Prova helps Gen Z pause, verify, and think — breaking the scroll-and-share cycle of blind consumption.',
+	image = '/og-image.png',
+	keywords	= 'Prova, media literacy, misinformation, Gen Z, digital wellbeing, mindful sharing, fact-checking, information consumption, social media',
+	noindex = false,
+} = Astro.props;
+
+const canonicalURL = new URL(Astro.url.pathname, Astro.site);
+const socialImageURL = new URL(image, Astro.site);
 const csp = import.meta.env.DEV
 	? "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data:; connect-src 'self' https://astro.build; object-src 'none'; base-uri 'self'; frame-ancestors 'none';"
 	: "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'self'; frame-ancestors 'none';";
@@ -34,7 +46,41 @@ const csp = import.meta.env.DEV
 		<!-- font is loaded via CSS; removed incorrect /src/ preload to avoid 404 -->
 		<meta name="generator" content={Astro.generator} />
 		<meta name="description" content={description} />
+		<meta name="keywords" content={keywords} />
+		<meta name="robots" content={noindex ? 'noindex, nofollow' : 'index, follow'} />
+		<link rel="canonical" href={canonicalURL} />
 		<title>{title}</title>
+
+		<!-- Open Graph / Facebook / LinkedIn -->
+		<meta property="og:type" content="website" />
+		<meta property="og:url" content={canonicalURL} />
+		<meta property="og:title" content={title} />
+		<meta property="og:description" content={description} />
+		<meta property="og:image" content={socialImageURL} />
+		<meta property="og:site_name" content="Prova" />
+		<meta property="og:locale" content="en_US" />
+
+		<!-- Twitter / X -->
+		<meta name="twitter:card" content="summary_large_image" />
+		<meta name="twitter:url" content={canonicalURL} />
+		<meta name="twitter:title" content={title} />
+		<meta name="twitter:description" content={description} />
+		<meta name="twitter:image" content={socialImageURL} />
+
+		<!-- Theme color for mobile browser chrome (Gen Z audience = mostly mobile) -->
+		<meta name="theme-color" content="#000000" />
+
+		<!-- Structured data: Organization (helps investor/press searches surface accurate info) -->
+		<script type="application/ld+json" set:html={JSON.stringify({
+			"@context": "https://schema.org",
+			"@type": "Organization",
+			"name": "Prova",
+			"url": Astro.site?.toString(),
+			"description": description,
+			"slogan": "Pause, Prove, Protect.",
+			"knowsAbout": ["Media literacy", "Misinformation", "Digital wellbeing", "Consent and content verification"],
+			// TODO: add "logo", "sameAs" (social links), and "foundingDate" once available
+		})} />
 	</head>
 	<body>
 		<slot />
